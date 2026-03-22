@@ -22,3 +22,5 @@ This repository is organized by document purpose:
 3. Keep implementation-ready work items in `tasks/`.
 4. Keep acceptance criteria testable and observable.
 5. Record assumptions and unresolved dependencies explicitly.
+
+Linked repository workflow to Jira via SCRUM-27.
