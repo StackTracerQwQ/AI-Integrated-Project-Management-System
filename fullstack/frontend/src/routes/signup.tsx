@@ -1,189 +1,173 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  createFileRoute,
-  Link as RouterLink,
-  redirect,
-} from "@tanstack/react-router"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { AuthLayout } from "@/components/Common/AuthLayout"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { LoadingButton } from "@/components/ui/loading-button"
-import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+import { useState } from 'react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
+import { type UsersRegisterUserData } from '../client/types.gen'
+import { UsersService } from '../client/sdk.gen' 
 
-const formSchema = z
-  .object({
-    email: z.email(),
-    full_name: z.string().min(1, { message: "Full Name is required" }),
-    password: z
-      .string()
-      .min(1, { message: "Password is required" })
-      .min(8, { message: "Password must be at least 8 characters" }),
-    confirm_password: z
-      .string()
-      .min(1, { message: "Password confirmation is required" }),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "The passwords don't match",
-    path: ["confirm_password"],
-  })
-
-type FormData = z.infer<typeof formSchema>
-
-export const Route = createFileRoute("/signup")({
-  component: SignUp,
-  beforeLoad: async () => {
-    if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
-    }
-  },
-  head: () => ({
-    meta: [
-      {
-        title: "Sign Up - FastAPI Template",
-      },
-    ],
-  }),
+export const Route = createFileRoute('/signup')({
+  component: Signup,
 })
 
-function SignUp() {
-  const { signUpMutation } = useAuth()
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    mode: "onBlur",
-    criteriaMode: "all",
-    defaultValues: {
-      email: "",
-      full_name: "",
-      password: "",
-      confirm_password: "",
-    },
-  })
+function Signup() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const onSubmit = (data: FormData) => {
-    if (signUpMutation.isPending) return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-    // exclude confirm_password from submission data
-    const { confirm_password: _confirm_password, ...submitData } = data
-    signUpMutation.mutate(submitData)
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const userData: UsersRegisterUserData = {
+        requestBody: {
+          email,
+          password,
+          full_name: name,
+        }
+      }
+      await UsersService.registerUser(userData)
+      toast.success('Account created! Please log in.')
+      navigate({ to: '/login' })
+    } catch {
+      toast.error('Failed to create account. Email may already be in use.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
-    <AuthLayout>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-6"
-        >
-          <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl font-bold">Create an account</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl mb-4">
+            <span className="font-bold text-white text-2xl">G</span>
           </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">GAMA Consulting</h1>
+          <p className="text-gray-600">Create your account</p>
+        </div>
 
-          <div className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="full_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      data-testid="full-name-input"
-                      placeholder="User"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Signup Form */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Sign Up</h2>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      data-testid="email-input"
-                      placeholder="user@example.com"
-                      type="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                  placeholder="John Smith"
+                  required
+                />
+              </div>
+            </div>
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput
-                      data-testid="password-input"
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+            </div>
 
-            <FormField
-              control={form.control}
-              name="confirm_password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput
-                      data-testid="confirm-password-input"
-                      placeholder="Confirm Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                  placeholder="Minimum 8 characters"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
 
-            <LoadingButton
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  id="confirmPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                  placeholder="Re-enter password"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
               type="submit"
-              className="w-full"
-              loading={signUpMutation.isPending}
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Sign Up
-            </LoadingButton>
-          </div>
+              {isLoading ? 'Creating account...' : 'Create Account'}
+            </button>
+          </form>
 
-          <div className="text-center text-sm">
-            Already have an account?{" "}
-            <RouterLink to="/login" className="underline underline-offset-4">
-              Log in
-            </RouterLink>
+          <div className="mt-6 text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+              Sign in
+            </Link>
           </div>
-        </form>
-      </Form>
-    </AuthLayout>
+        </div>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          © 2026 GAMA Consulting. All rights reserved.
+        </p>
+      </div>
+    </div>
   )
 }
-
-export default SignUp
