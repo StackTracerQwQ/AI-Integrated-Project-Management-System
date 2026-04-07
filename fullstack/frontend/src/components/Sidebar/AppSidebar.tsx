@@ -1,4 +1,4 @@
-import { Briefcase, Home, Users } from "lucide-react"
+import { Briefcase, Settings, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import { Logo } from "@/components/Common/Logo"
@@ -13,21 +13,28 @@ import { type Item, Main } from "./Main"
 import { User } from "./User"
 
 const baseItems: Item[] = [
-  { icon: Home, title: "Dashboard", path: "/" },
-  { icon: Briefcase, title: "Items", path: "/items" },
+  { icon: Briefcase, title: "Projects", path: "/" },
+  { icon: Settings, title: "Setting", path: "/settings" },
 ]
 
 export function AppSidebar() {
   const { user: currentUser } = useAuth()
 
   const items = currentUser?.is_superuser
-    ? [...baseItems, { icon: Users, title: "Admin", path: "/admin" }]
+    ? [baseItems[0], { icon: Users, title: "People", path: "/admin" }, baseItems[1]]
     : baseItems
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="px-4 py-6 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
-        <Logo variant="responsive" />
+      <SidebarHeader className="px-5 py-6 border-b border-sidebar-border/70 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+        <div className="font-serif font-semibold leading-tight text-2xl tracking-wide group-data-[collapsible=icon]:hidden">
+          ADMIN
+          <br />
+          DASHBOARD
+        </div>
+        <div className="hidden group-data-[collapsible=icon]:block">
+          <Logo variant="icon" />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <Main items={items} />
