@@ -18,6 +18,9 @@ import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as LayoutAdminIndexRouteImport } from './routes/_layout/admin.index'
+import { Route as LayoutAdminSettingsRouteImport } from './routes/_layout/admin.settings'
+import { Route as LayoutAdminPeopleRouteImport } from './routes/_layout/admin.people'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -63,6 +66,21 @@ const LayoutAdminRoute = LayoutAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutAdminIndexRoute = LayoutAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutAdminRoute,
+} as any)
+const LayoutAdminSettingsRoute = LayoutAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutAdminRoute,
+} as any)
+const LayoutAdminPeopleRoute = LayoutAdminPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => LayoutAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
@@ -70,19 +88,24 @@ export interface FileRoutesByFullPath {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof LayoutAdminRoute
+  '/admin': typeof LayoutAdminRouteWithChildren
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
+  '/admin/people': typeof LayoutAdminPeopleRoute
+  '/admin/settings': typeof LayoutAdminSettingsRoute
+  '/admin/': typeof LayoutAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof LayoutAdminRoute
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/admin/people': typeof LayoutAdminPeopleRoute
+  '/admin/settings': typeof LayoutAdminSettingsRoute
+  '/admin': typeof LayoutAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,10 +114,13 @@ export interface FileRoutesById {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/_layout/admin': typeof LayoutAdminRoute
+  '/_layout/admin': typeof LayoutAdminRouteWithChildren
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/admin/people': typeof LayoutAdminPeopleRoute
+  '/_layout/admin/settings': typeof LayoutAdminSettingsRoute
+  '/_layout/admin/': typeof LayoutAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,16 +133,21 @@ export interface FileRouteTypes {
     | '/admin'
     | '/items'
     | '/settings'
+    | '/admin/people'
+    | '/admin/settings'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
-    | '/admin'
     | '/items'
     | '/settings'
     | '/'
+    | '/admin/people'
+    | '/admin/settings'
+    | '/admin'
   id:
     | '__root__'
     | '/_layout'
@@ -128,6 +159,9 @@ export interface FileRouteTypes {
     | '/_layout/items'
     | '/_layout/settings'
     | '/_layout/'
+    | '/_layout/admin/people'
+    | '/_layout/admin/settings'
+    | '/_layout/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,18 +237,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/admin/': {
+      id: '/_layout/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof LayoutAdminIndexRouteImport
+      parentRoute: typeof LayoutAdminRoute
+    }
+    '/_layout/admin/settings': {
+      id: '/_layout/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof LayoutAdminSettingsRouteImport
+      parentRoute: typeof LayoutAdminRoute
+    }
+    '/_layout/admin/people': {
+      id: '/_layout/admin/people'
+      path: '/people'
+      fullPath: '/admin/people'
+      preLoaderRoute: typeof LayoutAdminPeopleRouteImport
+      parentRoute: typeof LayoutAdminRoute
+    }
   }
 }
 
+interface LayoutAdminRouteChildren {
+  LayoutAdminPeopleRoute: typeof LayoutAdminPeopleRoute
+  LayoutAdminSettingsRoute: typeof LayoutAdminSettingsRoute
+  LayoutAdminIndexRoute: typeof LayoutAdminIndexRoute
+}
+
+const LayoutAdminRouteChildren: LayoutAdminRouteChildren = {
+  LayoutAdminPeopleRoute: LayoutAdminPeopleRoute,
+  LayoutAdminSettingsRoute: LayoutAdminSettingsRoute,
+  LayoutAdminIndexRoute: LayoutAdminIndexRoute,
+}
+
+const LayoutAdminRouteWithChildren = LayoutAdminRoute._addFileChildren(
+  LayoutAdminRouteChildren,
+)
+
 interface LayoutRouteChildren {
-  LayoutAdminRoute: typeof LayoutAdminRoute
+  LayoutAdminRoute: typeof LayoutAdminRouteWithChildren
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutAdminRoute: LayoutAdminRoute,
+  LayoutAdminRoute: LayoutAdminRouteWithChildren,
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,

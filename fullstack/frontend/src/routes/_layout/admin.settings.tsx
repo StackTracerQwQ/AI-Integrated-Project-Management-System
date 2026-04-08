@@ -1,48 +1,47 @@
-import { Link as RouterLink, createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
+import { Link as RouterLink } from "@tanstack/react-router"
 
+import { UsersService } from "@/client"
 import ChangePassword from "@/components/UserSettings/ChangePassword"
-import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import useAuth from "@/hooks/useAuth"
 
 const tabsConfig = [
   { value: "my-profile", title: "My profile", component: UserInformation },
   { value: "password", title: "Password", component: ChangePassword },
-  { value: "danger-zone", title: "Danger zone", component: DeleteAccount },
 ]
 
-export const Route = createFileRoute("/_layout/settings")({
-  component: UserSettings,
+export const Route = createFileRoute("/_layout/admin/settings")({
+  component: AdminSettings,
+  beforeLoad: async () => {
+    const user = await UsersService.readUserMe()
+    if (!user.is_superuser) {
+      throw redirect({
+        to: "/",
+      })
+    }
+  },
   head: () => ({
     meta: [
       {
-        title: "Settings - FastAPI Template",
+        title: "Admin Settings - GAMA FLOW",
       },
     ],
   }),
 })
 
-function UserSettings() {
-  const { user: currentUser } = useAuth()
-
-  if (!currentUser) {
-    return null
-  }
-
+function AdminSettings() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">User Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences
+          Manage your admin account settings
         </p>
-        {currentUser.is_superuser ? (
-          <Button asChild className="mt-4">
-            <RouterLink to="/admin">Go to admin</RouterLink>
-          </Button>
-        ) : null}
+        <Button asChild className="mt-4">
+          <RouterLink to="/">Back to normal</RouterLink>
+        </Button>
       </div>
 
       <Tabs defaultValue="my-profile">
