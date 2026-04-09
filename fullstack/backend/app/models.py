@@ -286,15 +286,25 @@ class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)
 
 
+class AdminUserCreate(SQLModel):
+    email: EmailStr = Field(max_length=255)
+    password: str = Field(min_length=8, max_length=128)
+    role_name: str | None = Field(default=None, max_length=100)
+
+
 class UserRegister(SQLModel):
     email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=8, max_length=128)
     full_name: str | None = Field(default=None, max_length=255)
+    role_name: str | None = Field(default=None, max_length=100)
+    role_title: str | None = Field(default=None, max_length=100)
+    
 
 
 class UserUpdate(UserBase):
     email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
     password: str | None = Field(default=None, min_length=8, max_length=128)
+    role_name: str | None = Field(default=None, max_length=100)
 
 
 class UserUpdateMe(SQLModel):
@@ -332,6 +342,29 @@ class UserPublic(UserBase):
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
+
+
+class UserDetail(SQLModel):
+    id: uuid.UUID
+    email: str
+    full_name: str | None = None
+    role: str | None = None
+
+
+class UsersDetail(SQLModel):
+    data: list[UserDetail]
+    count: int
+
+
+class UserProfile(SQLModel):
+    id: uuid.UUID
+    email: str
+    is_superuser: bool
+    first_name: str | None = None
+    last_name: str | None = None
+    full_name: str | None = None
+    role_name: str | None = None
+    is_active: bool
 
 
 # ---------------------------------------------------------------------------
@@ -969,6 +1002,33 @@ class NotificationPreferencePublic(NotificationPreferenceBase):
 class NotificationPreferencesPublic(SQLModel):
     data: list[NotificationPreferencePublic]
     count: int
+
+
+# ---------------------------------------------------------------------------
+# API Response Schemas (project dashboard)
+# ---------------------------------------------------------------------------
+
+class ProjectSummary(SQLModel):
+    project_id: uuid.UUID
+    project_name: str | None = None
+    client_name: str | None = None
+    project_manager_name: str | None = None
+    days_since_started: int | None = None
+
+
+class ProjectsListResponse(SQLModel):
+    data: list[ProjectSummary]
+    count: int
+
+
+class MonthlyCountResponse(SQLModel):
+    current_month: int
+    previous_month: int
+
+
+class MonthlyInvoiceResponse(SQLModel):
+    current_month_total: Decimal
+    previous_month_total: Decimal
 
 
 # ---------------------------------------------------------------------------
