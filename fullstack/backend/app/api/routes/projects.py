@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app import crud
 from app.api.deps import SessionDep, get_current_active_superuser
@@ -9,10 +9,35 @@ from app.models import (
     MonthlyCountResponse,
     MonthlyInvoiceResponse,
     ProjectsListResponse,
+    ProjectCreateRequest,
+    ProjectCreateResponse
 )
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
+
+@router.post("", response_model=ProjectCreateResponse)
+def create_project(project: ProjectCreateRequest, session: SessionDep) -> ProjectCreateResponse:
+    existing_project = crud.get_project_by_job_number(session=session, job_number=project.job_number)
+    if existing_project:
+        raise HTTPException(
+            status_code=409,
+            detail="A project with this job_number already exists",
+        )
+    
+    created_project = crud.create_project(session=session, project_data=project)
+    return ProjectCreateResponse(project_id=created_project.id, message="Project created successfully")
+
+
+# For testing purposes, will likely be removed in production
+@router.get(
+    "",
+    response_model=ProjectsListResponse,
+)
+def get_all_projects(session: SessionDep) -> Any:
+    projects = crud.get_all_active_projects(session=session)
+    summaries = crud.build_project_summaries(session=session, projects=projects)
+    return ProjectsListResponse(data=summaries, count=len(summaries))
 
 @router.get(
     "/all-project",

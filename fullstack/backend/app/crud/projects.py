@@ -3,6 +3,8 @@ from calendar import monthrange
 from datetime import date
 from decimal import Decimal
 
+from app.crud.project_statuses import get_status_type
+
 from sqlmodel import Session, col, func, or_, select
 
 from app.models import (
@@ -14,6 +16,57 @@ from app.models import (
     ProjectMilestone,
     ProjectSummary,
 )
+
+def get_or_create_client(
+    *, session: Session, client_name: str, company_name: str | None, contact_email: str | None, billing_address: str | None
+) -> Client:
+    client = session.exec(select(Client).where(Client.client_name == client_name and Client.company_name == company_name)).first()
+    if client:
+        return client
+    
+    client = Client(
+        client_name=client_name,
+        contact_email=contact_email,
+        company_name=company_name,
+        billing_address=billing_address,
+    )
+
+    session.add(client)
+    session.commit()
+    session.refresh(client)
+    return client
+
+def get_project_by_job_number(*, session: Session, job_number: str) -> Project | None:
+    return session.exec(select(Project).where(Project.job_number == job_number)).first()
+
+
+def create_project(*, session: Session, project_data) -> Project:
+    client = get_or_create_client(
+        session=session,
+        client_name=project_data.client_name,
+        company_name=project_data.client_company,
+        contact_email=project_data.client_contact,
+        billing_address=project_data.client_address,
+    )
+
+    status_type = get_status_type(session=session, status_name="new")
+
+    project = Project(
+        job_number=project_data.job_number,
+        client_id=client.id,
+        current_status_id=status_type.id,
+        project_name=project_data.job_title,
+        project_type=project_data.project_types,
+        full_address=project_data.client_address,
+        date_received=project_data.date_received,
+        notes=f"Agent: {project_data.agent}" if project_data.agent else None,
+    )
+    session.add(project)
+    session.commit()
+    session.refresh(project)
+    return project
+
+
 
 
 def month_bounds(year: int, month: int) -> tuple[date, date]:

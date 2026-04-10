@@ -6,6 +6,9 @@ from pydantic import EmailStr
 from sqlalchemy import DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.types import Enum as SQLEnum
+from enum import Enum
+
 
 
 def get_datetime_utc() -> datetime:
@@ -62,6 +65,14 @@ class ProjectStatusTypeBase(SQLModel):
     status_name: str = Field(max_length=100)
     description: str | None = Field(default=None, sa_type=Text)
     is_active: bool = True
+
+
+class ProjectStatus(str, Enum):
+    new = "new"
+    in_progress = "in_progress"
+    completed = "completed"
+    on_hold = "on_hold"
+    cancelled = "cancelled"
 
 
 class ProjectStatusTypeCreate(ProjectStatusTypeBase):
@@ -1003,6 +1014,23 @@ class NotificationPreferencesPublic(SQLModel):
     data: list[NotificationPreferencePublic]
     count: int
 
+# ---------------------------------------------------------------------------
+# API Request Schemas (project dashboard)
+# ---------------------------------------------------------------------------
+class ProjectCreateRequest(SQLModel):
+    job_number: str
+    project_types: str
+    job_title: str
+    agent: str | None = None
+    client_name: str
+    client_company: str | None = None
+    client_contact: str
+    client_address: str
+    date_received: date
+
+class ProjectCreateResponse(SQLModel):
+    project_id: uuid.UUID
+    message: str = "project created successfully"
 
 # ---------------------------------------------------------------------------
 # API Response Schemas (project dashboard)

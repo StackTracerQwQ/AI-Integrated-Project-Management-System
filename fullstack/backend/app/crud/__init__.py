@@ -21,6 +21,14 @@ from app.crud.projects import (
     month_bounds,
     prev_month,
     sum_invoices,
+    get_or_create_client,
+    create_project,
+    get_project_by_job_number
+)
+
+from app.crud.project_statuses import (
+    get_status_type,
+    create_status_type,
 )
 
 __all__ = [
@@ -46,4 +54,10 @@ __all__ = [
     "month_bounds",
     "prev_month",
     "sum_invoices",
+    "get_or_create_client",
+    "create_project",
+    "get_project_by_job_number",
+    # project statuses
+    "get_status_type",
+    "create_status_type",
 ]
