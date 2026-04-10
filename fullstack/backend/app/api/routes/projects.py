@@ -38,8 +38,8 @@ def create_project(project: ProjectCreateRequest, session: SessionDep) -> Projec
     "",
     response_model=ProjectDetailsResponse,
 )
-def get_all_projects(session: SessionDep) -> list[ProjectDetail]:
-    projects = crud.get_all_projects(session=session)
+def get_all_projects(session: SessionDep, status: str | None = None) -> ProjectDetailsResponse:
+    projects = crud.get_projects_by_status(session=session, status=status)
     details = crud.build_project_details(session=session, projects=projects)
     return ProjectDetailsResponse(data=details, count=len(details))
 

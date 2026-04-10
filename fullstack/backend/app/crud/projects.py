@@ -16,6 +16,7 @@ from app.models import (
     ProjectCreateRequest,
     ProjectDetail,
     ProjectMilestone,
+    ProjectStatusType,
     ProjectSummary,
 )
 
@@ -105,6 +106,16 @@ def build_project_details(*, session: Session, projects: list[Project]) -> list[
             )
         )
     return result
+
+
+
+def get_projects_by_status(*, session: Session, status: str | None = None) -> list[Project]:
+    query = select(Project)
+    if status:
+        query = query.join(ProjectStatusType).where(ProjectStatusType.status_name == status)
+    return list(session.exec(query.order_by(col(Project.created_at).desc())).all())
+
+# --------------------------------
 
 def month_bounds(year: int, month: int) -> tuple[date, date]:
     _, last_day = monthrange(year, month)

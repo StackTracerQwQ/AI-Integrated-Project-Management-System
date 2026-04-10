@@ -26,7 +26,8 @@ from app.crud.projects import (
     get_project_by_job_number,
     get_project_by_id,
     get_all_projects,
-    build_project_details
+    build_project_details,
+    get_projects_by_status
 )
 
 from app.crud.project_statuses import (
@@ -63,6 +64,7 @@ __all__ = [
     "get_project_by_id",
     "get_all_projects",
     "build_project_details",
+    "get_projects_by_status",
     # project statuses
     "get_status_type",
     "create_status_type",
