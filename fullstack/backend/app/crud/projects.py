@@ -18,6 +18,7 @@ from app.models import (
     ProjectMilestone,
     ProjectStatusType,
     ProjectSummary,
+    ProjectUpdateRequest,
 )
 
 def get_or_create_client(
@@ -124,7 +125,32 @@ def delete_project(*, session: Session, project_id: uuid.UUID) -> bool:
     session.commit()
     return True
 
+def update_project(*, session: Session, project_id: uuid.UUID, project_data: ProjectUpdateRequest) -> Project | None:
+    project = session.get(Project, project_id)
+    if not project:
+        return None
 
+    if project_data.status is not None:
+        status_type = get_status_type(session=session, status_name=project_data.status)
+        project.current_status_id = status_type.id
+
+    if project_data.project_name is not None:
+        project.project_name = project_data.project_name
+    if project_data.project_types is not None:
+        project.project_type = project_data.project_types
+    if project_data.date_received is not None:
+        project.date_received = project_data.date_received
+    if project_data.start_date is not None:
+        project.start_date = project_data.start_date
+    if project_data.due_date is not None:
+        project.due_date = project_data.due_date
+    if project_data.fee_estimate is not None:
+        project.fee_final = project_data.fee_estimate
+
+    session.add(project)
+    session.commit()
+    session.refresh(project)
+    return project
 
 # --------------------------------
 

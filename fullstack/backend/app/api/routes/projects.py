@@ -11,10 +11,12 @@ from app.models import (
     MonthlyInvoiceResponse,
     ProjectDetailsResponse,
     ProjectSummary,
+    ProjectUpdateRequest,
     ProjectsListResponse,
     ProjectCreateRequest,
     ProjectCreateResponse,
     ProjectDetail,
+    Message
 )
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -72,7 +74,22 @@ def delete_project(project_id: uuid.UUID, session: SessionDep):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     return {"message": "Project deleted successfully"}
 
+@router.patch("/{project_id}", response_model=Message)
+def update_project(
+    project_id: uuid.UUID,
+    project: ProjectUpdateRequest,
+    session: SessionDep,
+) -> Message:
+    existing = crud.get_project_by_id(session=session, project_id=project_id)
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
 
+    try:
+        crud.update_project(session=session, project_id=project_id, project_data=project)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+    return Message(message="Project updated successfully")
 
 
 

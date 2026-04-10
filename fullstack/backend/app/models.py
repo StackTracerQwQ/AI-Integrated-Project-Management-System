@@ -1039,6 +1039,17 @@ class ProjectCreateResponse(SQLModel):
     project_id: uuid.UUID
     message: str = "project created successfully"
 
+
+class ProjectUpdateRequest(SQLModel):
+    project_name: str | None = None
+    project_types: str | None = None
+    status: str | None = None
+    date_received: date | None = None
+    start_date: date | None = None
+    due_date: date | None = None
+    fee_estimate: Decimal | None = None
+
+
 # ---------------------------------------------------------------------------
 # API Response Schemas (project dashboard)
 # ---------------------------------------------------------------------------
