@@ -2,7 +2,7 @@ from datetime import date
 from typing import Any
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app import crud
 from app.api.deps import SessionDep, get_current_active_superuser
@@ -65,6 +65,12 @@ def get_project_by_id(session: SessionDep, project_id: uuid.UUID) -> ProjectDeta
         days_elapsed=(date.today() - project.created_at.date()).days if project.created_at else None,
     )
 
+
+@router.delete("/{project_id}")
+def delete_project(project_id: uuid.UUID, session: SessionDep):
+    if not crud.delete_project(session=session, project_id=project_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    return {"message": "Project deleted successfully"}
 
 
 

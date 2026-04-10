@@ -115,6 +115,17 @@ def get_projects_by_status(*, session: Session, status: str | None = None) -> li
         query = query.join(ProjectStatusType).where(ProjectStatusType.status_name == status)
     return list(session.exec(query.order_by(col(Project.created_at).desc())).all())
 
+
+def delete_project(*, session: Session, project_id: uuid.UUID) -> bool:
+    project = session.get(Project, project_id)
+    if not project:
+        return False
+    session.delete(project)
+    session.commit()
+    return True
+
+
+
 # --------------------------------
 
 def month_bounds(year: int, month: int) -> tuple[date, date]:
