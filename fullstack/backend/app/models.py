@@ -68,11 +68,16 @@ class ProjectStatusTypeBase(SQLModel):
 
 
 class ProjectStatus(str, Enum):
-    new = "new"
-    in_progress = "in_progress"
-    completed = "completed"
-    on_hold = "on_hold"
-    cancelled = "cancelled"
+    proposal = "proposal"
+    prelim = "prelim"
+    design_doc = "design & doc"
+    amendment = "amendment"
+    hold = "hold"
+    to_be_invoiced = "to be invoiced"
+    completed_invoiced = "completed & invoiced"
+    eng_qa = "Eng/QA Review"
+    construction = "construction"
+    blank = "-"
 
 
 class ProjectStatusTypeCreate(ProjectStatusTypeBase):
@@ -1019,14 +1024,16 @@ class NotificationPreferencesPublic(SQLModel):
 # ---------------------------------------------------------------------------
 class ProjectCreateRequest(SQLModel):
     job_number: str
-    project_types: str
-    job_title: str
-    agent: str | None = None
+    project_types: str = "civil"
+    project_name: str
     client_name: str
     client_company: str | None = None
-    client_contact: str
-    client_address: str
+    client_contact: str | None = None
+    client_address: str | None = None
+    fee_estimate: Decimal | None = None
     date_received: date
+    start_date: date
+    due_date: date
 
 class ProjectCreateResponse(SQLModel):
     project_id: uuid.UUID
@@ -1035,6 +1042,22 @@ class ProjectCreateResponse(SQLModel):
 # ---------------------------------------------------------------------------
 # API Response Schemas (project dashboard)
 # ---------------------------------------------------------------------------
+
+class ProjectDetail(SQLModel):
+    project_id: uuid.UUID
+    job_number: str
+    project_name: str | None = None
+    company_name: str | None = None
+    company_address: str | None = None
+    client_name: str | None = None
+    status: str | None = None
+    start_date: date | None = None
+    due_date: date | None = None
+    days_elapsed: int | None = None
+
+class ProjectDetailsResponse(SQLModel):
+    data: list[ProjectDetail]
+    count: int
 
 class ProjectSummary(SQLModel):
     project_id: uuid.UUID

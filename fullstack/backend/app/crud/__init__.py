@@ -23,7 +23,10 @@ from app.crud.projects import (
     sum_invoices,
     get_or_create_client,
     create_project,
-    get_project_by_job_number
+    get_project_by_job_number,
+    get_project_by_id,
+    get_all_projects,
+    build_project_details
 )
 
 from app.crud.project_statuses import (
@@ -57,6 +60,9 @@ __all__ = [
     "get_or_create_client",
     "create_project",
     "get_project_by_job_number",
+    "get_project_by_id",
+    "get_all_projects",
+    "build_project_details",
     # project statuses
     "get_status_type",
     "create_status_type",

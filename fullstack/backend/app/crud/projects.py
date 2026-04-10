@@ -13,6 +13,8 @@ from app.models import (
     Invoice,
     Project,
     ProjectAssignment,
+    ProjectCreateRequest,
+    ProjectDetail,
     ProjectMilestone,
     ProjectSummary,
 )
@@ -39,8 +41,20 @@ def get_or_create_client(
 def get_project_by_job_number(*, session: Session, job_number: str) -> Project | None:
     return session.exec(select(Project).where(Project.job_number == job_number)).first()
 
+def get_project_by_id(*, session: Session, project_id: uuid.UUID) -> Project | None:
+    return session.get(Project, project_id)
 
-def create_project(*, session: Session, project_data) -> Project:
+def get_all_projects(*, session: Session) -> list[Project]:
+    return list(
+        session.exec(
+            select(Project)
+            .order_by(col(Project.created_at).desc())
+        ).all()
+    )
+
+
+
+def create_project(*, session: Session, project_data: ProjectCreateRequest) -> Project:
     client = get_or_create_client(
         session=session,
         client_name=project_data.client_name,
@@ -49,17 +63,19 @@ def create_project(*, session: Session, project_data) -> Project:
         billing_address=project_data.client_address,
     )
 
-    status_type = get_status_type(session=session, status_name="new")
+    status_type = get_status_type(session=session, status_name="prelim")
 
     project = Project(
         job_number=project_data.job_number,
         client_id=client.id,
         current_status_id=status_type.id,
-        project_name=project_data.job_title,
+        project_name=project_data.project_name,
         project_type=project_data.project_types,
         full_address=project_data.client_address,
         date_received=project_data.date_received,
-        notes=f"Agent: {project_data.agent}" if project_data.agent else None,
+        fee_final=project_data.fee_estimate,
+        start_date=project_data.start_date,
+        due_date=project_data.due_date,
     )
     session.add(project)
     session.commit()
@@ -67,7 +83,28 @@ def create_project(*, session: Session, project_data) -> Project:
     return project
 
 
-
+def build_project_details(*, session: Session, projects: list[Project]) -> list[ProjectDetail]:
+    today = date.today()
+    result = []
+    for p in projects:
+        client = session.get(Client, p.client_id) if p.client_id else None
+        days = (today - p.start_date).days if p.start_date else None
+        result.append(
+            ProjectDetail(
+                project_id=p.id,
+                job_number=p.job_number,
+                project_name=p.project_name,
+                comany_name=p.client.company_name if client else None,
+                company_address=p.client.billing_address if client else None,
+                client_name=p.client.client_name if client else None,
+                status=p.current_status.status_name if p.current_status else None,
+                start_date=p.start_date,
+                due_date=p.due_date,
+                date_received=p.created_at.date() if p.created_at else None,
+                days_elapsed=days,
+            )
+        )
+    return result
 
 def month_bounds(year: int, month: int) -> tuple[date, date]:
     _, last_day = monthrange(year, month)
