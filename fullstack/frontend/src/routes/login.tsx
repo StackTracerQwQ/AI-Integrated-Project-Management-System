@@ -1,142 +1,97 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  createFileRoute,
-  Link as RouterLink,
-  redirect,
-} from "@tanstack/react-router"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
-import type { Body_login_login_access_token as AccessToken } from "@/client"
-import { AuthLayout } from "@/components/Common/AuthLayout"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { LoadingButton } from "@/components/ui/loading-button"
-import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
-
-const formSchema = z.object({
-  username: z.email(),
-  password: z
-    .string()
-    .min(1, { message: "Password is required" })
-    .min(8, { message: "Password must be at least 8 characters" }),
-}) satisfies z.ZodType<AccessToken>
-
-type FormData = z.infer<typeof formSchema>
-
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute('/login')({
   component: Login,
-  beforeLoad: async () => {
-    if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
-    }
-  },
-  head: () => ({
-    meta: [
-      {
-        title: "Log In - FastAPI Template",
-      },
-    ],
-  }),
 })
 
 function Login() {
-  const { loginMutation } = useAuth()
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    mode: "onBlur",
-    criteriaMode: "all",
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  })
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const onSubmit = (data: FormData) => {
-    if (loginMutation.isPending) return
-    loginMutation.mutate(data)
+  const handleLogin = (e: any) => {
+    e.preventDefault()
+
+    if (!email || !password) {
+      alert("Please fill all fields")
+      return
+    }
+
+    // TEMP (no backend yet)
+    console.log("Email:", email)
+    console.log("Password:", password)
+
+    alert("Login button works ✅")
   }
 
   return (
-    <AuthLayout>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-6"
-        >
-          <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl font-bold">Login to your account</h1>
-          </div>
+    <div style={{ display: "flex", height: "100vh" }}>
 
-          <div className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      data-testid="email-input"
-                      placeholder="user@example.com"
-                      type="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
+      {/* LEFT SIDE */}
+      <div style={{
+        width: "50%",
+        background: "#2c6f8f",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "30px",
+        fontWeight: "bold"
+      }}>
+        GAMA FLOW
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div style={{
+        width: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}>
+        <div style={{
+          padding: "40px",
+          borderRadius: "20px",
+          background: "#f2f2f2",
+          width: "300px",
+          textAlign: "center"
+        }}>
+
+          <h2>Welcome Back</h2>
+          <p>Sign in to continue</p>
+
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center">
-                    <FormLabel>Password</FormLabel>
-                    <RouterLink
-                      to="/recover-password"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </RouterLink>
-                  </div>
-                  <FormControl>
-                    <PasswordInput
-                      data-testid="password-input"
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
+            <input
+              type="password"
+              placeholder="Password"
+              style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
-            <LoadingButton type="submit" loading={loginMutation.isPending}>
-              Log In
-            </LoadingButton>
-          </div>
+            <button
+              style={{
+                width: "100%",
+                padding: "10px",
+                background: "#2c6f8f",
+                color: "white",
+                border: "none",
+                borderRadius: "10px"
+              }}
+            >
+              LOGIN
+            </button>
+          </form>
 
-          <div className="text-center text-sm">
-            Don't have an account yet?{" "}
-            <RouterLink to="/signup" className="underline underline-offset-4">
-              Sign up
-            </RouterLink>
-          </div>
-        </form>
-      </Form>
-    </AuthLayout>
+        </div>
+      </div>
+    </div>
   )
 }
