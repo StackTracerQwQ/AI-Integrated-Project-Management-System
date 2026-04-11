@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { Link as RouterLink, createFileRoute } from "@tanstack/react-router"
 
 import ChangePassword from "@/components/UserSettings/ChangePassword"
 import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
 
@@ -25,9 +26,6 @@ export const Route = createFileRoute("/_layout/settings")({
 
 function UserSettings() {
   const { user: currentUser } = useAuth()
-  const finalTabs = currentUser?.is_superuser
-    ? tabsConfig.slice(0, 3)
-    : tabsConfig
 
   if (!currentUser) {
     return null
@@ -40,17 +38,22 @@ function UserSettings() {
         <p className="text-muted-foreground">
           Manage your account settings and preferences
         </p>
+        {currentUser.is_superuser ? (
+          <Button asChild className="mt-4">
+            <RouterLink to="/admin">Go to admin</RouterLink>
+          </Button>
+        ) : null}
       </div>
 
       <Tabs defaultValue="my-profile">
         <TabsList>
-          {finalTabs.map((tab) => (
+          {tabsConfig.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.title}
             </TabsTrigger>
           ))}
         </TabsList>
-        {finalTabs.map((tab) => (
+        {tabsConfig.map((tab) => (
           <TabsContent key={tab.value} value={tab.value}>
             <tab.component />
           </TabsContent>
