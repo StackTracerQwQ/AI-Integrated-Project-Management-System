@@ -1,7 +1,16 @@
-import { Briefcase, Home, Users } from "lucide-react"
+import {
+  Home,
+  FolderKanban,
+  CheckSquare,
+  Bot,
+  Settings,
+  Users,
+  PlusCircle,
+  BarChart2,
+  Wrench,
+} from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
-import { Logo } from "@/components/Common/Logo"
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +23,12 @@ import { User } from "./User"
 
 const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },
-  { icon: Briefcase, title: "Items", path: "/items" },
+  { icon: FolderKanban, title: "Projects", path: "/projects" },
+  { icon: CheckSquare, title: "Task Board", path: "/tasks" },
+  { icon: Wrench, title: "Subcontractors", path: "/subcontractors" },
+  { icon: Bot, title: "AI Assistant", path: "/ai-assistant" },
+  { icon: BarChart2, title: "Analytics", path: "/analytics" },
+  { icon: Settings, title: "Settings", path: "/settings" },
 ]
 
 export function AppSidebar() {
@@ -27,7 +41,16 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-4 py-6 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
-        <Logo variant="responsive" />
+        {/* GAMA Branding */}
+        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center justify-center w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg shrink-0">
+            <span className="font-bold text-white text-lg">G</span>
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <p className="font-bold text-gray-900 dark:text-white text-sm leading-tight">GAMA Consulting</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Project Management</p>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <Main items={items} />
