@@ -1,0 +1,312 @@
+import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  Plus,
+  Building2,
+  Calendar,
+  MapPin,
+  Clock,
+  User,
+  TrendingUp,
+  CheckCircle2,
+  Circle,
+} from 'lucide-react'
+
+export const Route = createFileRoute('/_layout/projects/')({
+  component: Projects,
+})
+
+const projectsData = [
+  {
+    id: '1',
+    jobNumber: 'PRJ-2024-001',
+    name: 'High-Rise Commercial Tower',
+    client: 'Metropolis Development Corp',
+    agent: 'Sarah Chen',
+    contact: '+1 (555) 123-4567',
+    location: 'Downtown District, Metro City',
+    suburb: 'Downtown',
+    lotNo: 'Lot 45, 123 Main St',
+    dateReceived: '2024-01-15',
+    status: 'In Progress',
+    feeEstimate: '$450,000',
+    progress: 65,
+    daysElapsed: 80,
+  },
+  {
+    id: '2',
+    jobNumber: 'PRJ-2024-002',
+    name: 'Residential Complex Phase 2',
+    client: 'GreenHaven Properties',
+    agent: 'James Liu',
+    contact: '+1 (555) 234-5678',
+    location: 'Westside, Metro City',
+    suburb: 'Westside',
+    lotNo: 'Lot 12-15, 456 Oak Ave',
+    dateReceived: '2024-02-01',
+    status: 'In Progress',
+    feeEstimate: '$320,000',
+    progress: 42,
+    daysElapsed: 64,
+  },
+  {
+    id: '3',
+    jobNumber: 'PRJ-2024-003',
+    name: 'Bridge Renovation Project',
+    client: 'City Infrastructure Department',
+    agent: 'Robert Johnson',
+    contact: '+1 (555) 345-6789',
+    location: 'River District',
+    suburb: 'River District',
+    lotNo: 'N/A',
+    dateReceived: '2023-11-01',
+    status: 'Done',
+    feeEstimate: '$280,000',
+    progress: 100,
+    daysElapsed: 156,
+  },
+  {
+    id: '4',
+    jobNumber: 'PRJ-2024-004',
+    name: 'Shopping Mall Expansion',
+    client: 'Retail Ventures Inc',
+    agent: 'Emily Watson',
+    contact: '+1 (555) 456-7890',
+    location: 'North Plaza',
+    suburb: 'North District',
+    lotNo: 'Lot 88, 789 Commerce Blvd',
+    dateReceived: '2024-03-20',
+    status: 'To Be Started',
+    feeEstimate: '$580,000',
+    progress: 0,
+    daysElapsed: 16,
+  },
+  {
+    id: '5',
+    jobNumber: 'PRJ-2024-005',
+    name: 'University Science Building',
+    client: 'State University',
+    agent: 'Michael Torres',
+    contact: '+1 (555) 567-8901',
+    location: 'University Campus',
+    suburb: 'Campus District',
+    lotNo: 'Building Site 4',
+    dateReceived: '2024-03-15',
+    status: 'To Be Started',
+    feeEstimate: '$720,000',
+    progress: 0,
+    daysElapsed: 21,
+  },
+  {
+    id: '6',
+    jobNumber: 'PRJ-2023-012',
+    name: 'Parking Structure Downtown',
+    client: 'City Development Authority',
+    agent: 'Anna Rodriguez',
+    contact: '+1 (555) 678-9012',
+    location: 'Central Business District',
+    suburb: 'Downtown',
+    lotNo: 'Lot 22, 321 Park St',
+    dateReceived: '2023-09-10',
+    status: 'Done',
+    feeEstimate: '$380,000',
+    progress: 100,
+    daysElapsed: 208,
+  },
+]
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'To Be Started':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+    case 'In Progress':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+    case 'Done':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
+  }
+}
+
+const ProjectCard = ({ project }: { project: typeof projectsData[0] }) => (
+  <Link
+    to="/projects/$projectId"
+    params={{ projectId: project.id }}
+    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all"
+  >
+    <div className="flex items-start justify-between mb-3">
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+            {project.jobNumber}
+          </span>
+          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(project.status)}`}>
+            {project.status}
+          </span>
+        </div>
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+          {project.name}
+        </h3>
+      </div>
+    </div>
+
+    <div className="space-y-2 mb-3">
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <Building2 size={14} className="flex-shrink-0" />
+        <span className="truncate">{project.client}</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <MapPin size={14} className="flex-shrink-0" />
+        <span className="truncate">{project.suburb}</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <User size={14} className="flex-shrink-0" />
+        <span className="truncate">{project.agent}</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <Calendar size={14} className="flex-shrink-0" />
+        <span>{new Date(project.dateReceived).toLocaleDateString()}</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <Clock size={14} className="flex-shrink-0" />
+        <span>{project.daysElapsed} days elapsed</span>
+      </div>
+    </div>
+
+    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-gray-500 dark:text-gray-400">Progress</span>
+        <span className="text-xs font-semibold text-gray-900 dark:text-white">{project.progress}%</span>
+      </div>
+      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div
+          className={`h-2 rounded-full transition-all ${
+            project.progress === 100
+              ? 'bg-green-600'
+              : project.progress > 0
+              ? 'bg-blue-600'
+              : 'bg-gray-400'
+          }`}
+          style={{ width: `${project.progress}%` }}
+        />
+      </div>
+    </div>
+
+    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-500 dark:text-gray-400">Fee Estimate</span>
+        <span className="text-sm font-bold text-gray-900 dark:text-white">{project.feeEstimate}</span>
+      </div>
+    </div>
+  </Link>
+)
+
+function Projects() {
+  const toBeStarted = projectsData.filter((p) => p.status === 'To Be Started')
+  const inProgress = projectsData.filter((p) => p.status === 'In Progress')
+  const done = projectsData.filter((p) => p.status === 'Done')
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Projects</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Manage all your engineering projects
+          </p>
+        </div>
+        <Link
+          to="/projects/new"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus size={20} />
+          New Project
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border-2 border-yellow-200 dark:border-yellow-800 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-yellow-900 dark:text-yellow-400">To Be Started</h3>
+            <Circle className="text-yellow-600 dark:text-yellow-400" size={24} />
+          </div>
+          <p className="text-3xl font-bold text-yellow-900 dark:text-yellow-400">{toBeStarted.length}</p>
+          <p className="text-sm text-yellow-700 dark:text-yellow-500 mt-1">projects pending</p>
+        </div>
+
+        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl border-2 border-blue-200 dark:border-blue-800 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-400">In Progress</h3>
+            <TrendingUp className="text-blue-600 dark:text-blue-400" size={24} />
+          </div>
+          <p className="text-3xl font-bold text-blue-900 dark:text-blue-400">{inProgress.length}</p>
+          <p className="text-sm text-blue-700 dark:text-blue-500 mt-1">active projects</p>
+        </div>
+
+        <div className="bg-green-50 dark:bg-green-900/10 rounded-xl border-2 border-green-200 dark:border-green-800 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-green-900 dark:text-green-400">Done</h3>
+            <CheckCircle2 className="text-green-600 dark:text-green-400" size={24} />
+          </div>
+          <p className="text-3xl font-bold text-green-900 dark:text-green-400">{done.length}</p>
+          <p className="text-sm text-green-700 dark:text-green-500 mt-1">completed projects</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">To Be Started</h2>
+            <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">({toBeStarted.length})</span>
+          </div>
+          <div className="space-y-4">
+            {toBeStarted.length > 0 ? (
+              toBeStarted.map((project) => <ProjectCard key={project.id} project={project} />)
+            ) : (
+              <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <Circle size={48} className="mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500">No projects to start</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 bg-blue-500 rounded-full" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">In Progress</h2>
+            <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">({inProgress.length})</span>
+          </div>
+          <div className="space-y-4">
+            {inProgress.length > 0 ? (
+              inProgress.map((project) => <ProjectCard key={project.id} project={project} />)
+            ) : (
+              <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <TrendingUp size={48} className="mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500">No active projects</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 bg-green-500 rounded-full" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Done</h2>
+            <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">({done.length})</span>
+          </div>
+          <div className="space-y-4">
+            {done.length > 0 ? (
+              done.map((project) => <ProjectCard key={project.id} project={project} />)
+            ) : (
+              <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <CheckCircle2 size={48} className="mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500">No completed projects</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
