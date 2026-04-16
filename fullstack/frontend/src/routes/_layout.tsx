@@ -8,6 +8,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { isLoggedIn } from "@/hooks/useAuth"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -25,6 +28,7 @@ function Layout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        <ToastContainer position="top-right" />
         <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1 text-muted-foreground" />
         </header>
