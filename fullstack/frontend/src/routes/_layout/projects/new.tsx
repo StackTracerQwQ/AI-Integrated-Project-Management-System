@@ -12,6 +12,7 @@ import {
   DollarSign,
   Hash,
 } from 'lucide-react'
+import axios from 'axios'
 
 export const Route = createFileRoute('/_layout/projects/new')({
   component: NewProject,
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_layout/projects/new')({
 
 function NewProject() {
   const navigate = useNavigate()
+  const [submissionError, setSubmissionError] = useState('')
   const [formData, setFormData] = useState({
     jobNumber: '',
     client: '',
@@ -28,9 +30,10 @@ function NewProject() {
     lotNo: '',
     street: '',
     suburb: '',
+    dueDate: new Date().toISOString().split('T')[0],
     dateReceived: new Date().toISOString().split('T')[0],
-    status: 'To Be Started',
-    feeEstimate: '',
+    status: 'prelim',
+    feeEstimate: 0,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -51,6 +54,7 @@ function NewProject() {
     }
   }
 
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
     if (!formData.jobNumber.trim()) newErrors.jobNumber = 'Job Number is required'
@@ -62,11 +66,47 @@ function NewProject() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (validateForm()) {
-      console.log('Project data:', formData)
+    if (!validateForm()) return
+
+    setSubmissionError('')
+
+    const payload = {
+      job_number: formData.jobNumber,
+      project_types: 'civil', // Defaulting to 'civil' for now, can be made dynamic later
+      project_name: formData.jobTitle,
+      client_company: formData.client,
+      client_name: formData.agent,
+      client_contact: formData.contact,
+      client_address: `${formData.lotNo} ${formData.street}, ${formData.suburb}`,
+      fee_estimate: formData.feeEstimate,
+      date_received: formData.dateReceived,
+      start_date: formData.dateReceived,
+      due_date: formData.dueDate,
+    }
+
+    console.log('Submitting payload:', payload)
+
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        setSubmissionError(result.detail || 'Failed to create project')
+        return
+      }
+
       navigate({ to: '/projects' })
+    } catch (error) {
+      setSubmissionError('Unable to reach the backend. Please try again later.')
     }
   }
 
@@ -278,6 +318,26 @@ function NewProject() {
             </div>
 
             <div>
+              <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <Calendar size={16} />
+                  Due Date <span className="text-red-500">*</span>
+                </div>
+              </label>
+              <input
+                type="date"
+                id="dueDate"
+                name="dueDate"
+                value={formData.dueDate}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.dueDate ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+              />
+              {errors.dueDate && <p className="mt-1 text-sm text-red-500">{errors.dueDate}</p>}
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} />
@@ -292,7 +352,7 @@ function NewProject() {
 
           {/* Status & Fee Estimate */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+            {/* <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Status <span className="text-red-500">*</span>
               </label>
@@ -310,7 +370,7 @@ function NewProject() {
                 <option value="Done">Done</option>
               </select>
               {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
-            </div>
+            </div> */}
 
             <div>
               <label htmlFor="feeEstimate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -320,12 +380,12 @@ function NewProject() {
                 </div>
               </label>
               <input
-                type="text"
+                type="number"
                 id="feeEstimate"
                 name="feeEstimate"
                 value={formData.feeEstimate}
                 onChange={handleChange}
-                placeholder="$450,000"
+                placeholder="450000"
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
