@@ -104,6 +104,7 @@ def build_project_details(*, session: Session, projects: list[Project]) -> list[
                 due_date=p.due_date,
                 date_received=p.created_at.date() if p.created_at else None,
                 days_elapsed=days,
+                fee_estimate=p.fee_final,
             )
         )
     return result

@@ -10,10 +10,20 @@ import {
   CheckCircle2,
   Circle,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
+const baseUrl = import.meta.env.VITE_API_URL;
+
 
 export const Route = createFileRoute('/_layout/projects/')({
   component: Projects,
 })
+
+
+
+
+
+
 
 const projectsData = [
   {
@@ -114,6 +124,22 @@ const projectsData = [
   },
 ]
 
+type Project = {
+  job_number: string
+  project_id: string
+  project_name: string
+  company_name: string
+  company_address: string
+  client_name: string
+  status: string
+  start_date: string
+  due_date: string
+  days_elapsed: number
+  progress: number | 100
+  fee_estimate: string | ""
+}
+
+
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'To Be Started':
@@ -127,24 +153,24 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const ProjectCard = ({ project }: { project: typeof projectsData[0] }) => (
+const ProjectCard = ({ project }: { project: Project }) => (
   <Link
     to="/projects/$projectId"
-    params={{ projectId: project.id }}
+    params={{ projectId: project.project_id }}
     className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all"
   >
     <div className="flex items-start justify-between mb-3">
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
-            {project.jobNumber}
+            {project.job_number}
           </span>
           <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(project.status)}`}>
             {project.status}
           </span>
         </div>
         <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-          {project.name}
+          {project.project_name}
         </h3>
       </div>
     </div>
@@ -152,23 +178,23 @@ const ProjectCard = ({ project }: { project: typeof projectsData[0] }) => (
     <div className="space-y-2 mb-3">
       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <Building2 size={14} className="flex-shrink-0" />
-        <span className="truncate">{project.client}</span>
+        <span className="truncate">{project.company_name}</span>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <MapPin size={14} className="flex-shrink-0" />
-        <span className="truncate">{project.suburb}</span>
+        <span className="truncate">{project.company_address}</span>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <User size={14} className="flex-shrink-0" />
-        <span className="truncate">{project.agent}</span>
+        <span className="truncate">{project.client_name}</span>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <Calendar size={14} className="flex-shrink-0" />
-        <span>{new Date(project.dateReceived).toLocaleDateString()}</span>
+        <span>{new Date(project.start_date).toLocaleDateString()}</span>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <Clock size={14} className="flex-shrink-0" />
-        <span>{project.daysElapsed} days elapsed</span>
+        <span>{project.days_elapsed} days elapsed</span>
       </div>
     </div>
 
@@ -194,16 +220,56 @@ const ProjectCard = ({ project }: { project: typeof projectsData[0] }) => (
     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-500 dark:text-gray-400">Fee Estimate</span>
-        <span className="text-sm font-bold text-gray-900 dark:text-white">{project.feeEstimate}</span>
+        <span className="text-sm font-bold text-gray-900 dark:text-white">{project.fee_estimate}</span>
       </div>
     </div>
   </Link>
 )
 
+
+
+
 function Projects() {
-  const toBeStarted = projectsData.filter((p) => p.status === 'To Be Started')
-  const inProgress = projectsData.filter((p) => p.status === 'In Progress')
-  const done = projectsData.filter((p) => p.status === 'Done')
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+      const fetchProject = async () => {
+        try {
+          const response = await fetch(`${baseUrl}/api/v1/projects`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+  
+          const result = await response.json()
+  
+          if (!response.ok) {
+            toast.error(result.detail || 'Failed to fetch projects')
+            return
+          }
+  
+          console.log('Fetched project data:', result)
+  
+          setProjects(result.data);
+        } catch (error) {
+          console.error('Error fetching project data:', error)
+          toast.error('Network error')
+        } finally {
+          setLoading(false)
+        }
+      }
+  
+      fetchProject()
+    }, [])
+
+    
+  const toBeStarted = projects.filter((p) => p.status === 'prelim')
+  const inProgress = projects.filter((p) => p.status !== 'prelim' && p.status !== 'completed & invoiced')
+  const done = projects.filter((p) => p.status === 'completed & invoiced')
 
   return (
     <div className="space-y-6">
@@ -261,7 +327,7 @@ function Projects() {
           </div>
           <div className="space-y-4">
             {toBeStarted.length > 0 ? (
-              toBeStarted.map((project) => <ProjectCard key={project.id} project={project} />)
+              toBeStarted.map((project) => <ProjectCard key={project.job_number} project={project} />)
             ) : (
               <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <Circle size={48} className="mx-auto mb-4 text-gray-300" />
@@ -297,7 +363,7 @@ function Projects() {
           </div>
           <div className="space-y-4">
             {done.length > 0 ? (
-              done.map((project) => <ProjectCard key={project.id} project={project} />)
+              done.map((project) => <ProjectCard key={project.project_id} project={project} />)
             ) : (
               <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <CheckCircle2 size={48} className="mx-auto mb-4 text-gray-300" />

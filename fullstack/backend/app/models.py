@@ -1065,6 +1065,7 @@ class ProjectDetail(SQLModel):
     start_date: date | None = None
     due_date: date | None = None
     days_elapsed: int | None = None
+    fee_estimate: Decimal | None = None
 
 class ProjectDetailsResponse(SQLModel):
     data: list[ProjectDetail]

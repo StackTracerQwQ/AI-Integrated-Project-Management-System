@@ -65,6 +65,7 @@ def get_project_by_id(session: SessionDep, project_id: uuid.UUID) -> ProjectDeta
         start_date=project.start_date,
         due_date=project.due_date,
         days_elapsed=(date.today() - project.created_at.date()).days if project.created_at else None,
+        fee_estimate=project.fee_final,
     )
 
 
