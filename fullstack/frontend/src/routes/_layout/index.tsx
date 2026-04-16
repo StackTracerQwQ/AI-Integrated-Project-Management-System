@@ -22,6 +22,11 @@ import {
   Legend,
 } from 'chart.js'
 
+import { useQuery } from "@tanstack/react-query"
+import { projectsApi } from "../../api/project"
+
+
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 
 export const Route = createFileRoute('/_layout/')({
@@ -102,6 +107,37 @@ const recentTasks = [
 ]
 
 function Dashboard() {
+  
+  // active projects number
+  const { data: activeData } = useQuery({
+    queryKey: ['activeCount'],
+    queryFn: projectsApi.getCurrentProjectCount,
+  });
+
+  // all projects number
+  const { data: projectsData, } = useQuery({
+    queryKey: ['projects'],
+    queryFn: projectsApi.getAllProjects,
+  });
+  console.log("Projects Data from API:", projectsData);
+  
+  // completed projects number
+  const { data: completedCountData } = useQuery({
+    queryKey: ['completedCount'],
+    queryFn: projectsApi.getCompletedProjectCount,
+  });
+  
+  // risk projects number
+  const { data: delayedData } = useQuery({
+    queryKey: ['delayedProjects'],
+    queryFn: projectsApi.getDelayedProjects,
+  });
+
+  //revenue
+
+
+  
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -125,7 +161,7 @@ function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Active Projects</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">12</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{activeData?.current_month ?? 0}</p>
               <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
                 <TrendingUp size={16} /> +2 this month
               </p>
@@ -140,8 +176,8 @@ function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Tasks</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">142</p>
-              <p className="text-sm text-gray-500 mt-2">45 completed</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{projectsData?.count ?? 0}</p> 
+              <p className="text-sm text-gray-500 mt-2">{completedCountData?.count ?? 0} completed</p>
             </div>
             <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
               <CheckSquare className="text-green-600" size={24} />
@@ -153,7 +189,7 @@ function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">At Risk Items</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">8</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{delayedData?.length ?? 0}</p>
               <p className="text-sm text-red-600 mt-2">Requires attention</p>
             </div>
             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
@@ -263,30 +299,35 @@ function Dashboard() {
             </Link>
           </div>
           <div className="space-y-4">
-            {recentProjects.map((project) => (
-              <div key={project.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
+            {projectsData?.data?.slice(0, 3).map((project: any) => (
+              <div key={project.project_id} className="..."> 
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <Building2 size={16} className="text-gray-400" />
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{project.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{project.project_name}</h3>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{project.client}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{project.client_name}</p>
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">{project.type}</span>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+                        {project.status.toUpperCase()}
+                      </span>
                       <span className="text-gray-500 flex items-center gap-1">
-                        <Clock size={14} /> Due {new Date(project.dueDate).toLocaleDateString()}
+                        <Clock size={14} /> 
+                        Due {project.due_date ? new Date(project.due_date).toLocaleDateString() : 'TBD'}
                       </span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{project.progress}%</div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {project.progress ?? 0}%
+                    </div>
                     <div className="text-sm text-gray-500">Complete</div>
                   </div>
                 </div>
                 <div className="mt-3">
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${project.progress}%` }} />
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${project.progress ?? 0}%` }} />
                   </div>
                 </div>
               </div>
