@@ -13,22 +13,27 @@ import {
   Wrench,
   Circle,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
 
 export const Route = createFileRoute('/_layout/projects/$projectId')({
   component: ProjectDetails,
 })
 
+const baseUrl = import.meta.env.VITE_API_URL;
+
+
+
 const projectsData = {
   '1': {
-    id: 'PRJ-2024-001',
-    name: 'High-Rise Commercial Tower',
+    job_number: 'PRJ-2024-001',
+    project_name: 'High-Rise Commercial Tower',
     status: 'On Track',
     progress: 65,
-    client: 'Metropolis Development Corp',
-    location: 'Downtown District, Metro City',
-    startDate: 'Jan 15, 2024',
-    deliveryDate: 'Dec 20, 2024',
+    company_name: 'Metropolis Development Corp',
+    company_address: 'Downtown District, Metro City',
+    start_date: 'Jan 15, 2024',
+    due_date: 'Dec 20, 2024',
     aiInsight: {
       type: 'warning',
       title: 'Potential Delay Risk Detected',
@@ -56,14 +61,14 @@ const projectsData = {
     ],
   },
   '2': {
-    id: 'PRJ-2024-002',
-    name: 'Residential Complex Phase 2',
+    job_number: 'PRJ-2024-002',
+    project_name: 'Residential Complex Phase 2',
     status: 'At Risk',
     progress: 42,
-    client: 'GreenHaven Properties',
-    location: 'Westside, Metro City',
-    startDate: 'Feb 1, 2024',
-    deliveryDate: 'Nov 30, 2024',
+    company_name: 'GreenHaven Properties',
+    company_address: 'Westside, Metro City',
+    start_date: 'Feb 1, 2024',
+    due_date: 'Nov 30, 2024',
     aiInsight: {
       type: 'critical',
       title: 'Critical Deadline Risk',
@@ -89,14 +94,14 @@ const projectsData = {
     ],
   },
   '3': {
-    id: 'PRJ-2024-003',
-    name: 'Bridge Renovation Project',
+    job_number: 'PRJ-2024-003',
+    project_name: 'Bridge Renovation Project',
     status: 'Completed',
     progress: 100,
-    client: 'City Infrastructure Department',
-    location: 'River District',
-    startDate: 'Nov 1, 2023',
-    deliveryDate: 'Mar 15, 2024',
+    company_name: 'City Infrastructure Department',
+    company_address: 'River District',
+    start_date: 'Nov 1, 2023',
+    due_date: 'Mar 15, 2024',
     aiInsight: {
       type: 'success',
       title: 'Project Successfully Completed',
@@ -121,6 +126,49 @@ const projectsData = {
     ],
   },
 }
+
+type Project = {
+  job_number: string
+  project_name: string
+  company_name: string
+  company_address: string
+  status: string
+  start_date: string
+  due_date: string
+  days_elapsed: number
+}
+
+
+
+const taskProjectFields = {
+  progress: 80,
+  aiInsight: {
+    type: 'warning',
+    title: 'Potential Delay Risk Detected',
+    description: 'Foundation phase running 5% behind schedule. Recommend adding 2 additional structural engineers to critical path tasks.',
+    confidence: 87,
+  },
+  workflow: [
+    { phase: 'Planning', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'Foundation', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'Structural', status: 'in-progress', progress: 65, color: 'blue' },
+    { phase: 'MEP', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Finishing', status: 'pending', progress: 0, color: 'gray' },
+  ],
+  materials: [
+    { name: 'Steel Beams', status: 'delivered', quantity: '450 tons' },
+    { name: 'Concrete Mix', status: 'in-transit', quantity: '2,500 m³' },
+    { name: 'Reinforcement Bars', status: 'ordered', quantity: '180 tons' },
+  ],
+  workforce: [
+    { name: 'Harri Rassias', role: 'Structural Engineer', avatar: 'HR', status: 'active', color: 'bg-blue-500' },
+    { name: 'Sarah Chen', role: 'Project Manager', avatar: 'SC', status: 'active', color: 'bg-purple-500' },
+    { name: 'Michael Torres', role: 'Site Supervisor', avatar: 'MT', status: 'active', color: 'bg-green-500' },
+    { name: 'Emily Watson', role: 'MEP Engineer', avatar: 'EW', status: 'available', color: 'bg-orange-500' },
+    { name: 'David Kim', role: 'Safety Officer', avatar: 'DK', status: 'active', color: 'bg-teal-500' },
+  ],
+}
+
 
 const getStatusBadgeColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -152,8 +200,46 @@ function ProjectDetails() {
   const { projectId } = Route.useParams()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'overview' | 'resources' | 'timeline'>('overview')
+  // const project = projectsData[projectId as keyof typeof projectsData]
+  const [loading, setLoading] = useState(true)
+  const [project, setProject] = useState<Project | null>(null)
 
-  const project = projectsData[projectId as keyof typeof projectsData]
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/api/v1/projects/${projectId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        const result = await response.json()
+
+        if (!response.ok) {
+          toast.error(result.detail || 'Failed to fetch project')
+          return
+        }
+
+        console.log('Fetched project data:', result)
+
+        setProject(result);
+      } catch (error) {
+        console.error('Error fetching project data:', error)
+        toast.error('Network error')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [projectId])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   if (!project) {
     return (
@@ -185,28 +271,28 @@ function ProjectDetails() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{project.id}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{project.job_number}</span>
               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeColor(project.status)}`}>
                 {project.status}
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{project.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{project.project_name}</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Building2 size={18} />
-                <span className="text-sm">{project.client}</span>
+                <span className="text-sm">{project.company_name}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <MapPin size={18} />
-                <span className="text-sm">{project.location}</span>
+                <span className="text-sm">{project.company_address}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Calendar size={18} />
-                <span className="text-sm">Start: {project.startDate}</span>
+                <span className="text-sm">Start: {project.start_date}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Clock size={18} />
-                <span className="text-sm">Delivery: {project.deliveryDate}</span>
+                <span className="text-sm">Delivery: {project.due_date}</span>
               </div>
             </div>
           </div>
@@ -219,16 +305,16 @@ function ProjectDetails() {
                 <circle
                   cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="none"
                   strokeDasharray={`${2 * Math.PI * 56}`}
-                  strokeDashoffset={`${2 * Math.PI * 56 * (1 - project.progress / 100)}`}
+                  strokeDashoffset={`${2 * Math.PI * 56 * (1 - taskProjectFields.progress / 100)}`}
                   className={`${
-                    project.progress >= 80 ? 'text-green-600' :
-                    project.progress >= 50 ? 'text-blue-600' : 'text-yellow-600'
+                    taskProjectFields.progress >= 80 ? 'text-green-600' :
+                    taskProjectFields.progress >= 50 ? 'text-blue-600' : 'text-yellow-600'
                   } transition-all duration-500`}
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">{project.progress}%</span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">{taskProjectFields.progress}%</span>
               </div>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Overall Progress</p>
@@ -238,25 +324,25 @@ function ProjectDetails() {
 
       {/* AI Insight */}
       <div className={`rounded-xl shadow-sm p-6 border-l-4 ${
-        project.aiInsight.type === 'critical' ? 'bg-red-50 dark:bg-red-900/10 border-red-500' :
-        project.aiInsight.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-500' :
+        taskProjectFields.aiInsight.type === 'critical' ? 'bg-red-50 dark:bg-red-900/10 border-red-500' :
+        taskProjectFields.aiInsight.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-500' :
         'bg-green-50 dark:bg-green-900/10 border-green-500'
       }`}>
         <div className="flex items-start gap-4">
-          {project.aiInsight.type === 'success' ? (
+          {taskProjectFields.aiInsight.type === 'success' ? (
             <CheckCircle2 className="text-green-600 flex-shrink-0" size={24} />
           ) : (
             <AlertTriangle className={`flex-shrink-0 ${
-              project.aiInsight.type === 'critical' ? 'text-red-600' : 'text-yellow-600'
+              taskProjectFields.aiInsight.type === 'critical' ? 'text-red-600' : 'text-yellow-600'
             }`} size={24} />
           )}
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-gray-900 dark:text-white">AI System Insight</h3>
-              <span className="text-xs text-gray-500">{project.aiInsight.confidence}% confidence</span>
+              <span className="text-xs text-gray-500">{taskProjectFields.aiInsight.confidence}% confidence</span>
             </div>
-            <h4 className="font-medium text-gray-900 dark:text-white mb-1">{project.aiInsight.title}</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{project.aiInsight.description}</p>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-1">{taskProjectFields.aiInsight.title}</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{taskProjectFields.aiInsight.description}</p>
           </div>
         </div>
       </div>
@@ -266,15 +352,15 @@ function ProjectDetails() {
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex gap-8 px-6">
             {[
-              { id: 'overview', label: 'Overview' },
-              { id: 'resources', label: 'Resources' },
-              { id: 'timeline', label: 'Timeline' },
+              { job_number: 'overview', label: 'Overview' },
+              { job_number: 'resources', label: 'Resources' },
+              { job_number: 'timeline', label: 'Timeline' },
             ].map((tab) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                key={tab.job_number}
+                onClick={() => setActiveTab(tab.job_number as any)}
                 className={`py-4 border-b-2 font-medium transition-colors ${
-                  activeTab === tab.id
+                  activeTab === tab.job_number
                     ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
@@ -294,7 +380,7 @@ function ProjectDetails() {
                   <TrendingUp size={20} /> Task Workflow Progress
                 </h3>
                 <div className="space-y-4">
-                  {project.workflow.map((phase, index) => (
+                  {taskProjectFields.workflow.map((phase, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -337,7 +423,7 @@ function ProjectDetails() {
                   <Package size={20} /> Materials Status
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {project.materials.map((material, index) => (
+                  {taskProjectFields.materials.map((material, index) => (
                     <div key={index} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <Package size={20} className="text-gray-400" />
@@ -358,7 +444,7 @@ function ProjectDetails() {
                   <Users size={20} /> Workforce Allocation
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {project.workforce.map((member, index) => (
+                  {taskProjectFields.workforce.map((member, index) => (
                     <div key={index} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                       <div className={`w-12 h-12 ${member.color} rounded-full flex items-center justify-center text-white font-bold`}>
                         {member.avatar}
