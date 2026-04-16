@@ -74,6 +74,12 @@ def delete_project(project_id: uuid.UUID, session: SessionDep):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     return {"message": "Project deleted successfully"}
 
+@router.delete("")
+def delete_all_projects(session: SessionDep):
+    count = crud.delete_all_projects(session=session)
+    return {"message": f"Successfully deleted {count} projects"}
+
+
 @router.patch("/{project_id}", response_model=Message)
 def update_project(
     project_id: uuid.UUID,

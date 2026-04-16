@@ -125,6 +125,14 @@ def delete_project(*, session: Session, project_id: uuid.UUID) -> bool:
     session.commit()
     return True
 
+def delete_all_projects(*, session: Session) -> int:
+    deleted = session.exec(select(Project)).all()
+    count = len(deleted)
+    for project in deleted:
+        session.delete(project)
+    session.commit()
+    return count
+
 def update_project(*, session: Session, project_id: uuid.UUID, project_data: ProjectUpdateRequest) -> Project | None:
     project = session.get(Project, project_id)
     if not project:

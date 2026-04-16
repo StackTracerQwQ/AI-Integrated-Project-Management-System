@@ -29,6 +29,7 @@ from app.crud.projects import (
     build_project_details,
     get_projects_by_status,
     delete_project,
+    delete_all_projects,
     update_project,
 )
 
@@ -68,6 +69,7 @@ __all__ = [
     "build_project_details",
     "get_projects_by_status",
     "delete_project",
+    "delete_all_projects",
     "update_project",
     # project statuses
     "get_status_type",
