@@ -51,7 +51,7 @@ $ docker compose watch
 
 There is also a commented out `command` override, you can uncomment it and comment the default one. It makes the backend container run a process that does "nothing", but keeps the container alive. That allows you to get inside your running container and execute commands inside, for example a Python interpreter to test installed dependencies, or start the development server that reloads when it detects changes.
 
-To get inside the container with a `bash` session you can start the stack with:
+To get inside the container with a `bash` session you can start the stack with: 
 
 ```console
 $ docker compose watch

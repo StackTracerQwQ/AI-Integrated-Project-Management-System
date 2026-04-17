@@ -31,7 +31,7 @@ export default function Login() {
             <input
               type="email"
               placeholder="Email"
-              classname="input"
+              className="input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
