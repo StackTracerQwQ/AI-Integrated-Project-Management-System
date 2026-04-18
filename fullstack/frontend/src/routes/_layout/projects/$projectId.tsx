@@ -12,18 +12,32 @@ import {
   Package,
   Wrench,
   Circle,
+  Trash2,
 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_layout/projects/$projectId')({
   component: ProjectDetails,
 })
 
+const PROJECT_STATUSES = [
+  'Proposal',
+  'Prelim',
+  'Design & Doc',
+  'Amendment',
+  'Hold',
+  'To Be Invoiced',
+  'Completed & Invoiced',
+  'Eng/QA Review',
+  'Construction',
+]
+
 const projectsData = {
   '1': {
     id: 'PRJ-2024-001',
     name: 'High-Rise Commercial Tower',
-    status: 'On Track',
+    status: 'Design & Doc',
     progress: 65,
     client: 'Metropolis Development Corp',
     location: 'Downtown District, Metro City',
@@ -58,7 +72,7 @@ const projectsData = {
   '2': {
     id: 'PRJ-2024-002',
     name: 'Residential Complex Phase 2',
-    status: 'At Risk',
+    status: 'Construction',
     progress: 42,
     client: 'GreenHaven Properties',
     location: 'Westside, Metro City',
@@ -91,7 +105,7 @@ const projectsData = {
   '3': {
     id: 'PRJ-2024-003',
     name: 'Bridge Renovation Project',
-    status: 'Completed',
+    status: 'Completed & Invoiced',
     progress: 100,
     client: 'City Infrastructure Department',
     location: 'River District',
@@ -122,15 +136,6 @@ const projectsData = {
   },
 }
 
-const getStatusBadgeColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'on track': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-    case 'at risk': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-    case 'completed': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-    default: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-  }
-}
-
 const getMaterialStatusColor = (status: string) => {
   switch (status) {
     case 'delivered': return 'text-green-600 dark:text-green-400'
@@ -154,6 +159,7 @@ function ProjectDetails() {
   const [activeTab, setActiveTab] = useState<'overview' | 'resources' | 'timeline'>('overview')
 
   const project = projectsData[projectId as keyof typeof projectsData]
+  const [projectStatus, setProjectStatus] = useState(project?.status || 'Proposal')
 
   if (!project) {
     return (
@@ -169,16 +175,32 @@ function ProjectDetails() {
     )
   }
 
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+      toast.success('Project deleted successfully')
+      navigate({ to: '/projects' })
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate({ to: '/projects' })}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        <ArrowLeft size={20} />
-        <span>Back to Projects</span>
-      </button>
+      {/* Header Bar */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate({ to: '/projects' })}
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          <ArrowLeft size={20} />
+          <span>Back to Projects</span>
+        </button>
+        <button
+          onClick={handleDelete}
+          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+        >
+          <Trash2 size={16} />
+          Delete Project
+        </button>
+      </div>
 
       {/* Project Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
@@ -186,9 +208,6 @@ function ProjectDetails() {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">{project.id}</span>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeColor(project.status)}`}>
-                {project.status}
-              </span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{project.name}</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -208,6 +227,23 @@ function ProjectDetails() {
                 <Clock size={18} />
                 <span className="text-sm">Delivery: {project.deliveryDate}</span>
               </div>
+            </div>
+
+            {/* Status Dropdown */}
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Project Status:</span>
+              <select
+                value={projectStatus}
+                onChange={(e) => {
+                  setProjectStatus(e.target.value)
+                  toast.success(`Status updated to "${e.target.value}"`)
+                }}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              >
+                {PROJECT_STATUSES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
           </div>
 
