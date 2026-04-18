@@ -1066,6 +1066,17 @@ class ProjectDetail(SQLModel):
     due_date: date | None = None
     days_elapsed: int | None = None
 
+
+class AssignmentWithRole(SQLModel):
+    employee_name: str | None = None
+    role_name: str | None = None
+    role_in_project: str | None = None
+
+
+class ProjectDetailWithRoles(ProjectDetail):
+    assignments: list[AssignmentWithRole] = []
+
+
 class ProjectDetailsResponse(SQLModel):
     data: list[ProjectDetail]
     count: int

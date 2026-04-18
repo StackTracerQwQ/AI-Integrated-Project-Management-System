@@ -7,9 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app import crud
 from app.api.deps import SessionDep, get_current_active_superuser
 from app.models import (
+    AssignmentWithRole,
     MonthlyCountResponse,
     MonthlyInvoiceResponse,
     ProjectDetailsResponse,
+    ProjectDetailWithRoles,
     ProjectSummary,
     ProjectUpdateRequest,
     ProjectsListResponse,
@@ -65,6 +67,45 @@ def get_project_by_id(session: SessionDep, project_id: uuid.UUID) -> ProjectDeta
         start_date=project.start_date,
         due_date=project.due_date,
         days_elapsed=(date.today() - project.created_at.date()).days if project.created_at else None,
+    )
+
+
+@router.get(
+    "/{project_id}/with-roles",
+    response_model=ProjectDetailWithRoles,
+)
+def get_project_with_roles(session: SessionDep, project_id: uuid.UUID) -> ProjectDetailWithRoles:
+    project = crud.get_project_by_id(session=session, project_id=project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    assignments: list[AssignmentWithRole] = []
+    for assignment in project.assignments:
+        if assignment.employee:
+            full_name = (
+                assignment.employee.full_name
+                or f"{assignment.employee.first_name} {assignment.employee.last_name}".strip()
+            )
+            assignments.append(
+                AssignmentWithRole(
+                    employee_name=full_name,
+                    role_name=assignment.employee.role.role_name if assignment.employee.role else None,
+                    role_in_project=assignment.allocation_notes,
+                )
+            )
+
+    return ProjectDetailWithRoles(
+        project_id=project.id,
+        job_number=project.job_number,
+        project_name=project.project_name,
+        company_name=project.client.company_name if project.client else None,
+        company_address=project.client.billing_address if project.client else None,
+        client_name=project.client.client_name if project.client else None,
+        status=project.current_status.status_name if project.current_status else None,
+        start_date=project.start_date,
+        due_date=project.due_date,
+        days_elapsed=(date.today() - project.created_at.date()).days if project.created_at else None,
+        assignments=assignments,
     )
 
 
