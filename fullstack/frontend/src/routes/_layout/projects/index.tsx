@@ -1,3 +1,5 @@
+import { projectsApi, Project } from '@/api/project';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   Plus,
@@ -10,9 +12,7 @@ import {
   CheckCircle2,
   Circle,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify';
-const baseUrl = import.meta.env.VITE_API_URL;
+
 
 
 export const Route = createFileRoute('/_layout/projects/')({
@@ -124,29 +124,21 @@ const projectsData = [
   },
 ]
 
-type Project = {
-  job_number: string
-  project_id: string
-  project_name: string
-  company_name: string
-  company_address: string
-  client_name: string
-  status: string
-  start_date: string
-  due_date: string
-  days_elapsed: number
-  progress: number | 100
-  fee_estimate: string | ""
-}
 
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'To Be Started':
+    case 'prelim':
+    case 'proposal':
       return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-    case 'In Progress':
+    case 'design & doc':
+    case 'amendment':
+    case 'hold':
       return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-    case 'Done':
+    case 'to be invoiced':
+    case 'completed & invoiced':
+    case 'Eng/QA Review':
+    case 'construction':
       return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
     default:
       return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
@@ -230,46 +222,16 @@ const ProjectCard = ({ project }: { project: Project }) => (
 
 
 function Projects() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-      const fetchProject = async () => {
-        try {
-          const response = await fetch(`${baseUrl}/api/v1/projects`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-  
-          const result = await response.json()
-  
-          if (!response.ok) {
-            toast.error(result.detail || 'Failed to fetch projects')
-            return
-          }
-  
-          console.log('Fetched project data:', result)
-  
-          setProjects(result.data);
-        } catch (error) {
-          console.error('Error fetching project data:', error)
-          toast.error('Network error')
-        } finally {
-          setLoading(false)
-        }
-      }
-  
-      fetchProject()
-    }, [])
-
+  // all projects number
+  const { data: projectsData, } = useQuery({
+    queryKey: ['projects'],
+    queryFn: projectsApi.getAllProjects,
+  });
     
-  const toBeStarted = projects.filter((p) => p.status === 'prelim')
-  const inProgress = projects.filter((p) => p.status !== 'prelim' && p.status !== 'completed & invoiced')
-  const done = projects.filter((p) => p.status === 'completed & invoiced')
+  const toBeStarted = projectsData?.data.filter((p) => p.status === 'prelim' || p.status === 'proposal') || []
+  const inProgress = projectsData?.data.filter((p) => p.status !== 'prelim' && p.status !== 'completed & invoiced' && p.status !== 'to be invoiced' && p.status !== 'proposal') || []
+  const done = projectsData?.data.filter((p) => p.status === 'completed & invoiced' || p.status === 'to be invoiced') || []
 
   return (
     <div className="space-y-6">
@@ -345,7 +307,7 @@ function Projects() {
           </div>
           <div className="space-y-4">
             {inProgress.length > 0 ? (
-              inProgress.map((project) => <ProjectCard key={project.id} project={project} />)
+              inProgress.map((project) => <ProjectCard key={project.project_id} project={project} />)
             ) : (
               <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <TrendingUp size={48} className="mx-auto mb-4 text-gray-300" />

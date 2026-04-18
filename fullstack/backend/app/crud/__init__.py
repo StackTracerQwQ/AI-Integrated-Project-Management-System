@@ -36,6 +36,7 @@ from app.crud.projects import (
 from app.crud.project_statuses import (
     get_status_type,
     create_status_type,
+    get_all_status_types
 )
 
 __all__ = [
@@ -74,4 +75,5 @@ __all__ = [
     # project statuses
     "get_status_type",
     "create_status_type",
+    "get_all_status_types",
 ]

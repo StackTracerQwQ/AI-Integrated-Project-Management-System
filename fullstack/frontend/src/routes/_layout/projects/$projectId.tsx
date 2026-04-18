@@ -18,11 +18,15 @@ import {
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 const baseUrl = import.meta.env.VITE_API_URL;
+import { projectsApi } from "../../../api/project";
+import { useQuery } from '@tanstack/react-query';
 
 
 export const Route = createFileRoute('/_layout/projects/$projectId')({
   component: ProjectDetails,
 })
+
+
 
 const PROJECT_STATUSES = [
   'Proposal',
@@ -313,6 +317,12 @@ function ProjectDetails() {
   const [loading, setLoading] = useState(true)
   const [project, setProject] = useState<Project | null>(null)
 
+
+  const { data: statusData } = useQuery({
+    queryKey: ['statuses'],
+    queryFn: projectsApi.getProjectStatuses,
+  });
+
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -476,12 +486,11 @@ function ProjectDetails() {
               <select
                 value={projectStatus}
                 onChange={(e) => {
-                  setProjectStatus(e.target.value)
-                  toast.success(`Status updated to "${e.target.value}"`)
+                  handleUpdateProjectStatus(e.target.value);
                 }}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
-                {PROJECT_STATUSES.map((s) => (
+                {statusData?.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>

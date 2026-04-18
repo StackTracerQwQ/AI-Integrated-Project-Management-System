@@ -141,6 +141,9 @@ def update_project(*, session: Session, project_id: uuid.UUID, project_data: Pro
 
     if project_data.status is not None:
         status_type = get_status_type(session=session, status_name=project_data.status)
+
+        if not status_type:
+            raise ValueError(f"Status type '{project_data.status}' does not exist.")
         project.current_status_id = status_type.id
 
     if project_data.project_name is not None:
