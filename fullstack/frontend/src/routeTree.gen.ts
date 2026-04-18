@@ -17,8 +17,14 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutTasksRouteImport } from './routes/_layout/tasks'
+import { Route as LayoutSubcontractorsRouteImport } from './routes/_layout/subcontractors'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+<<<<<<< HEAD
+=======
+import { Route as LayoutAiAssistantRouteImport } from './routes/_layout/ai-assistant'
+import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+>>>>>>> origin/feat/auth-pages-ui
 import { Route as LayoutProjectsIndexRouteImport } from './routes/_layout/projects/index'
 import { Route as LayoutProjectsNewRouteImport } from './routes/_layout/projects/new'
 import { Route as LayoutProjectsProjectIdRouteImport } from './routes/_layout/projects/$projectId'
@@ -62,6 +68,11 @@ const LayoutTasksRoute = LayoutTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutSubcontractorsRoute = LayoutSubcontractorsRouteImport.update({
+  id: '/subcontractors',
+  path: '/subcontractors',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -72,6 +83,19 @@ const LayoutItemsRoute = LayoutItemsRouteImport.update({
   path: '/items',
   getParentRoute: () => LayoutRoute,
 } as any)
+<<<<<<< HEAD
+=======
+const LayoutAiAssistantRoute = LayoutAiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutAdminRoute = LayoutAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => LayoutRoute,
+} as any)
+>>>>>>> origin/feat/auth-pages-ui
 const LayoutProjectsIndexRoute = LayoutProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -95,8 +119,14 @@ export interface FileRoutesByFullPath {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+<<<<<<< HEAD
+=======
+  '/admin': typeof LayoutAdminRoute
+  '/ai-assistant': typeof LayoutAiAssistantRoute
+>>>>>>> origin/feat/auth-pages-ui
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
+  '/subcontractors': typeof LayoutSubcontractorsRoute
   '/tasks': typeof LayoutTasksRoute
   '/projects/$projectId': typeof LayoutProjectsProjectIdRoute
   '/projects/new': typeof LayoutProjectsNewRoute
@@ -108,8 +138,14 @@ export interface FileRoutesByTo {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+<<<<<<< HEAD
+=======
+  '/admin': typeof LayoutAdminRoute
+  '/ai-assistant': typeof LayoutAiAssistantRoute
+>>>>>>> origin/feat/auth-pages-ui
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
+  '/subcontractors': typeof LayoutSubcontractorsRoute
   '/tasks': typeof LayoutTasksRoute
   '/': typeof LayoutIndexRoute
   '/projects/$projectId': typeof LayoutProjectsProjectIdRoute
@@ -124,8 +160,14 @@ export interface FileRoutesById {
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+<<<<<<< HEAD
+=======
+  '/_layout/admin': typeof LayoutAdminRoute
+  '/_layout/ai-assistant': typeof LayoutAiAssistantRoute
+>>>>>>> origin/feat/auth-pages-ui
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/subcontractors': typeof LayoutSubcontractorsRoute
   '/_layout/tasks': typeof LayoutTasksRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/projects/$projectId': typeof LayoutProjectsProjectIdRoute
@@ -141,8 +183,14 @@ export interface FileRouteTypes {
     | '/recover-password'
     | '/reset-password'
     | '/signup'
+<<<<<<< HEAD
+=======
+    | '/admin'
+    | '/ai-assistant'
+>>>>>>> origin/feat/auth-pages-ui
     | '/items'
     | '/settings'
+    | '/subcontractors'
     | '/tasks'
     | '/projects/$projectId'
     | '/projects/new'
@@ -154,8 +202,14 @@ export interface FileRouteTypes {
     | '/recover-password'
     | '/reset-password'
     | '/signup'
+<<<<<<< HEAD
+=======
+    | '/admin'
+    | '/ai-assistant'
+>>>>>>> origin/feat/auth-pages-ui
     | '/items'
     | '/settings'
+    | '/subcontractors'
     | '/tasks'
     | '/'
     | '/projects/$projectId'
@@ -169,8 +223,14 @@ export interface FileRouteTypes {
     | '/recover-password'
     | '/reset-password'
     | '/signup'
+<<<<<<< HEAD
+=======
+    | '/_layout/admin'
+    | '/_layout/ai-assistant'
+>>>>>>> origin/feat/auth-pages-ui
     | '/_layout/items'
     | '/_layout/settings'
+    | '/_layout/subcontractors'
     | '/_layout/tasks'
     | '/_layout/'
     | '/_layout/projects/$projectId'
@@ -245,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutTasksRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/subcontractors': {
+      id: '/_layout/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/subcontractors'
+      preLoaderRoute: typeof LayoutSubcontractorsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/settings': {
       id: '/_layout/settings'
       path: '/settings'
@@ -259,6 +326,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutItemsRouteImport
       parentRoute: typeof LayoutRoute
     }
+<<<<<<< HEAD
+=======
+    '/_layout/ai-assistant': {
+      id: '/_layout/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof LayoutAiAssistantRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/admin': {
+      id: '/_layout/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof LayoutAdminRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+>>>>>>> origin/feat/auth-pages-ui
     '/_layout/projects/': {
       id: '/_layout/projects/'
       path: '/projects'
@@ -284,8 +368,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface LayoutRouteChildren {
+<<<<<<< HEAD
+=======
+  LayoutAdminRoute: typeof LayoutAdminRoute
+  LayoutAiAssistantRoute: typeof LayoutAiAssistantRoute
+>>>>>>> origin/feat/auth-pages-ui
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutSubcontractorsRoute: typeof LayoutSubcontractorsRoute
   LayoutTasksRoute: typeof LayoutTasksRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutProjectsProjectIdRoute: typeof LayoutProjectsProjectIdRoute
@@ -294,8 +384,14 @@ interface LayoutRouteChildren {
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+<<<<<<< HEAD
+=======
+  LayoutAdminRoute: LayoutAdminRoute,
+  LayoutAiAssistantRoute: LayoutAiAssistantRoute,
+>>>>>>> origin/feat/auth-pages-ui
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutSubcontractorsRoute: LayoutSubcontractorsRoute,
   LayoutTasksRoute: LayoutTasksRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutProjectsProjectIdRoute: LayoutProjectsProjectIdRoute,

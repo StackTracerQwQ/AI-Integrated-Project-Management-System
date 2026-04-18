@@ -12,23 +12,35 @@ import {
   Package,
   Wrench,
   Circle,
+  Trash2,
+  Edit2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+const baseUrl = import.meta.env.VITE_API_URL;
+
 
 export const Route = createFileRoute('/_layout/projects/$projectId')({
   component: ProjectDetails,
 })
 
-const baseUrl = import.meta.env.VITE_API_URL;
-
-
+const PROJECT_STATUSES = [
+  'Proposal',
+  'Prelim',
+  'Design & Doc',
+  'Amendment',
+  'Hold',
+  'To Be Invoiced',
+  'Completed & Invoiced',
+  'Eng/QA Review',
+  'Construction',
+]
 
 const projectsData = {
   '1': {
     job_number: 'PRJ-2024-001',
     project_name: 'High-Rise Commercial Tower',
-    status: 'On Track',
+    status: 'Design & Doc',
     progress: 65,
     company_name: 'Metropolis Development Corp',
     company_address: 'Downtown District, Metro City',
@@ -94,9 +106,9 @@ const projectsData = {
     ],
   },
   '3': {
-    job_number: 'PRJ-2024-003',
-    project_name: 'Bridge Renovation Project',
-    status: 'Completed',
+    id: 'PRJ-2024-003',
+    name: 'Bridge Renovation Project',
+    status: 'Completed & Invoiced',
     progress: 100,
     company_name: 'City Infrastructure Department',
     company_address: 'River District',
@@ -125,6 +137,102 @@ const projectsData = {
       { name: 'Robert Johnson', role: 'Project Manager', avatar: 'RJ', status: 'completed', color: 'bg-purple-500' },
     ],
   },
+  '4': {
+  id: 'PRJ-2024-004',
+  name: 'Shopping Mall Expansion',
+  status: 'Proposal',
+  progress: 0,
+  client: 'Retail Ventures Inc',
+  location: 'North Plaza',
+  startDate: 'Mar 20, 2024',
+  deliveryDate: 'Dec 15, 2024',
+  aiInsight: {
+    type: 'warning',
+    title: 'Project Not Yet Started',
+    description: 'This project is awaiting kickoff. Ensure all preliminary documents are in order before starting.',
+    confidence: 90,
+  },
+  workflow: [
+    { phase: 'Planning', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Foundation', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Structural', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'MEP', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Finishing', status: 'pending', progress: 0, color: 'gray' },
+  ],
+  materials: [
+    { name: 'Steel Beams', status: 'ordered', quantity: '320 tons' },
+    { name: 'Concrete Mix', status: 'ordered', quantity: '2,100 m³' },
+    { name: 'Reinforcement Bars', status: 'ordered', quantity: '140 tons' },
+  ],
+  workforce: [
+    { name: 'Emily Watson', role: 'Project Manager', avatar: 'EW', status: 'available', color: 'bg-orange-500' },
+    { name: 'David Kim', role: 'Site Supervisor', avatar: 'DK', status: 'available', color: 'bg-teal-500' },
+  ],
+},
+'5': {
+  id: 'PRJ-2024-005',
+  name: 'University Science Building',
+  status: 'Proposal',
+  progress: 0,
+  client: 'State University',
+  location: 'University Campus',
+  startDate: 'Mar 15, 2024',
+  deliveryDate: 'Jan 20, 2025',
+  aiInsight: {
+    type: 'warning',
+    title: 'Project Not Yet Started',
+    description: 'Awaiting final approval from university board. Recommend following up within 48 hours.',
+    confidence: 85,
+  },
+  workflow: [
+    { phase: 'Planning', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Foundation', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Structural', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'MEP', status: 'pending', progress: 0, color: 'gray' },
+    { phase: 'Finishing', status: 'pending', progress: 0, color: 'gray' },
+  ],
+  materials: [
+    { name: 'Steel Beams', status: 'ordered', quantity: '410 tons' },
+    { name: 'Concrete Mix', status: 'ordered', quantity: '2,800 m³' },
+    { name: 'Reinforcement Bars', status: 'ordered', quantity: '200 tons' },
+  ],
+  workforce: [
+    { name: 'Michael Torres', role: 'Project Manager', avatar: 'MT', status: 'available', color: 'bg-green-500' },
+    { name: 'Sarah Chen', role: 'Structural Engineer', avatar: 'SC', status: 'available', color: 'bg-purple-500' },
+  ],
+},
+'6': {
+  id: 'PRJ-2023-012',
+  name: 'Parking Structure Downtown',
+  status: 'Completed & Invoiced',
+  progress: 100,
+  client: 'City Development Authority',
+  location: 'Central Business District',
+  startDate: 'Sep 10, 2023',
+  deliveryDate: 'Apr 5, 2024',
+  aiInsight: {
+    type: 'success',
+    title: 'Project Successfully Completed',
+    description: 'All phases completed on time and within budget.',
+    confidence: 100,
+  },
+  workflow: [
+    { phase: 'Planning', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'Foundation', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'Structural', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'MEP', status: 'completed', progress: 100, color: 'green' },
+    { phase: 'Finishing', status: 'completed', progress: 100, color: 'green' },
+  ],
+  materials: [
+    { name: 'Steel Beams', status: 'delivered', quantity: '220 tons' },
+    { name: 'Concrete Mix', status: 'delivered', quantity: '1,500 m³' },
+    { name: 'Reinforcement Bars', status: 'delivered', quantity: '95 tons' },
+  ],
+  workforce: [
+    { name: 'Anna Rodriguez', role: 'Project Manager', avatar: 'AR', status: 'completed', color: 'bg-green-500' },
+    { name: 'Harri Rassias', role: 'Structural Engineer', avatar: 'HR', status: 'completed', color: 'bg-blue-500' },
+  ],
+},
 }
 
 type Project = {
@@ -200,6 +308,7 @@ function ProjectDetails() {
   const { projectId } = Route.useParams()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'overview' | 'resources' | 'timeline'>('overview')
+  const [projectStatus, setProjectStatus] = useState('Proposal')
   // const project = projectsData[projectId as keyof typeof projectsData]
   const [loading, setLoading] = useState(true)
   const [project, setProject] = useState<Project | null>(null)
@@ -224,6 +333,7 @@ function ProjectDetails() {
         }
 
         console.log('Fetched project data:', result)
+        setProjectStatus(result.status);
 
         setProject(result);
       } catch (error) {
@@ -255,16 +365,43 @@ function ProjectDetails() {
     )
   }
 
+
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+      toast.success('Project deleted successfully')
+      navigate({ to: '/projects' })
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate({ to: '/projects' })}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        <ArrowLeft size={20} />
-        <span>Back to Projects</span>
-      </button>
+      {/* Header Bar */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate({ to: '/projects' })}
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          <ArrowLeft size={20} />
+          <span>Back to Projects</span>
+        </button>
+      <div className="flex items-center gap-2">
+  <button
+    onClick={() => toast.info('Edit project coming soon!')}
+    className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
+  >
+    <Edit2 size={16} />
+    Edit Project
+  </button>
+  <button
+    onClick={handleDelete}
+    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+  >
+    <Trash2 size={16} />
+    Delete Project
+  </button>
+</div>
+      </div>
 
       {/* Project Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
@@ -272,9 +409,6 @@ function ProjectDetails() {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">{project.job_number}</span>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeColor(project.status)}`}>
-                {project.status}
-              </span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{project.project_name}</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -295,6 +429,41 @@ function ProjectDetails() {
                 <span className="text-sm">Delivery: {project.due_date}</span>
               </div>
             </div>
+
+           {/* Status Dropdown */}
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Project Status:</span>
+              <select
+                value={project.status}
+                onChange={(e) => {
+                  setProjectStatus(e.target.value)
+                  toast.success(`Status updated to "${e.target.value}"`)
+                }}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              >
+                {PROJECT_STATUSES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Project Button */}
+            {(project.status === 'Proposal' || project.status === 'Prelim') && (
+              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-700 dark:text-blue-400 mb-3">
+                  This project hasn't been started yet. Click below when you're ready to begin.
+                </p>
+                <button
+                  onClick={() => {
+                    setProjectStatus('Design & Doc')
+                    toast.success('Project started! Status updated to Design & Doc')
+                  }}
+                  className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  🚀 Start Project
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Progress Circle */}
