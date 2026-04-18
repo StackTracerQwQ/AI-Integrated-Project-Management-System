@@ -369,10 +369,50 @@ function ProjectDetails() {
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-      toast.success('Project deleted successfully')
-      navigate({ to: '/projects' })
+      
+
+      setProject(null);
+      try {
+        fetch(`${baseUrl}/api/v1/projects/${projectId}`, {
+          method: 'DELETE',
+        });
+        toast.success('Project deleted successfully');
+        navigate({ to: '/projects' });
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        toast.error('Network error');
+
+      }
+
+      
     }
   }
+
+  const handleUpdateProjectStatus = async (newStatus: string) => {  
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/projects/${projectId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.detail || 'Failed to update project status');
+        return;
+      }
+
+      toast.success('Project status updated successfully');
+      setProjectStatus(newStatus);
+    } catch (error) {
+      console.error('Error updating project status:', error);
+      toast.error('Network error');
+    }
+  };
+
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -434,7 +474,7 @@ function ProjectDetails() {
             <div className="mt-4 flex items-center gap-3">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Project Status:</span>
               <select
-                value={project.status}
+                value={projectStatus}
                 onChange={(e) => {
                   setProjectStatus(e.target.value)
                   toast.success(`Status updated to "${e.target.value}"`)
@@ -447,7 +487,7 @@ function ProjectDetails() {
               </select>
             </div>
 
-            {/* Start Project Button */}
+            {/* Start Project Button
             {(project.status === 'Proposal' || project.status === 'Prelim') && (
               <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <p className="text-sm text-blue-700 dark:text-blue-400 mb-3">
@@ -463,7 +503,7 @@ function ProjectDetails() {
                   🚀 Start Project
                 </button>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Progress Circle */}
