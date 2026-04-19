@@ -6,6 +6,9 @@ from pydantic import EmailStr
 from sqlalchemy import DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.types import Enum as SQLEnum
+from enum import Enum
+
 
 
 def get_datetime_utc() -> datetime:
@@ -62,6 +65,19 @@ class ProjectStatusTypeBase(SQLModel):
     status_name: str = Field(max_length=100)
     description: str | None = Field(default=None, sa_type=Text)
     is_active: bool = True
+
+
+class ProjectStatus(str, Enum):
+    proposal = "proposal"
+    prelim = "prelim"
+    design_doc = "design & doc"
+    amendment = "amendment"
+    hold = "hold"
+    to_be_invoiced = "to be invoiced"
+    completed_invoiced = "completed & invoiced"
+    eng_qa = "Eng/QA Review"
+    construction = "construction"
+    blank = "-"
 
 
 class ProjectStatusTypeCreate(ProjectStatusTypeBase):
@@ -1003,10 +1019,57 @@ class NotificationPreferencesPublic(SQLModel):
     data: list[NotificationPreferencePublic]
     count: int
 
+# ---------------------------------------------------------------------------
+# API Request Schemas (project dashboard)
+# ---------------------------------------------------------------------------
+class ProjectCreateRequest(SQLModel):
+    job_number: str
+    project_types: str = "civil"
+    project_name: str
+    client_name: str
+    client_company: str | None = None
+    client_contact: str | None = None
+    client_address: str | None = None
+    fee_estimate: Decimal | None = None
+    date_received: date
+    start_date: date
+    due_date: date
+
+class ProjectCreateResponse(SQLModel):
+    project_id: uuid.UUID
+    message: str = "project created successfully"
+
+
+class ProjectUpdateRequest(SQLModel):
+    project_name: str | None = None
+    project_types: str | None = None
+    status: str | None = None
+    date_received: date | None = None
+    start_date: date | None = None
+    due_date: date | None = None
+    fee_estimate: Decimal | None = None
+
 
 # ---------------------------------------------------------------------------
 # API Response Schemas (project dashboard)
 # ---------------------------------------------------------------------------
+
+class ProjectDetail(SQLModel):
+    project_id: uuid.UUID
+    job_number: str
+    project_name: str | None = None
+    company_name: str | None = None
+    company_address: str | None = None
+    client_name: str | None = None
+    status: str | None = None
+    start_date: date | None = None
+    due_date: date | None = None
+    days_elapsed: int | None = None
+    fee_estimate: Decimal | None = None
+
+class ProjectDetailsResponse(SQLModel):
+    data: list[ProjectDetail]
+    count: int
 
 class ProjectSummary(SQLModel):
     project_id: uuid.UUID

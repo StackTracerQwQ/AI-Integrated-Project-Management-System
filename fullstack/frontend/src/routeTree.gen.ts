@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as LoginRouteImport } from './routes/login'
+<<<<<<< HEAD
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -18,6 +19,19 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin.people'
+=======
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutTasksRouteImport } from './routes/_layout/tasks'
+import { Route as LayoutSubcontractorsRouteImport } from './routes/_layout/subcontractors'
+import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+import { Route as LayoutAiAssistantRouteImport } from './routes/_layout/ai-assistant'
+import { Route as LayoutProjectsIndexRouteImport } from './routes/_layout/projects/index'
+import { Route as LayoutProjectsNewRouteImport } from './routes/_layout/projects/new'
+import { Route as LayoutProjectsProjectIdRouteImport } from './routes/_layout/projects/$projectId'
+>>>>>>> remotes/origin/integration/project-metadata
 
 const RecoverPasswordRoute = RecoverPasswordRouteImport.update({
   id: '/recover-password',
@@ -38,7 +52,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+<<<<<<< HEAD
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+=======
+const LayoutTasksRoute = LayoutTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutSubcontractorsRoute = LayoutSubcontractorsRouteImport.update({
+  id: '/subcontractors',
+  path: '/subcontractors',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
+>>>>>>> remotes/origin/integration/project-metadata
   id: '/settings',
   path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
@@ -48,6 +76,7 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+<<<<<<< HEAD
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -75,15 +104,67 @@ export interface FileRoutesByFullPath {
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+=======
+const LayoutAiAssistantRoute = LayoutAiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutProjectsIndexRoute = LayoutProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutProjectsNewRoute = LayoutProjectsNewRouteImport.update({
+  id: '/projects/new',
+  path: '/projects/new',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutProjectsProjectIdRoute = LayoutProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof LayoutIndexRoute
+  '/admin': typeof AdminRoute
+  '/login': typeof LoginRoute
+  '/recover-password': typeof RecoverPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/ai-assistant': typeof LayoutAiAssistantRoute
+  '/items': typeof LayoutItemsRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/subcontractors': typeof LayoutSubcontractorsRoute
+  '/tasks': typeof LayoutTasksRoute
+  '/projects/$projectId': typeof LayoutProjectsProjectIdRoute
+  '/projects/new': typeof LayoutProjectsNewRoute
+  '/projects/': typeof LayoutProjectsIndexRoute
+>>>>>>> remotes/origin/integration/project-metadata
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
+<<<<<<< HEAD
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+=======
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/ai-assistant': typeof LayoutAiAssistantRoute
+  '/items': typeof LayoutItemsRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/subcontractors': typeof LayoutSubcontractorsRoute
+  '/tasks': typeof LayoutTasksRoute
+  '/': typeof LayoutIndexRoute
+  '/projects/$projectId': typeof LayoutProjectsProjectIdRoute
+  '/projects/new': typeof LayoutProjectsNewRoute
+  '/projects': typeof LayoutProjectsIndexRoute
+>>>>>>> remotes/origin/integration/project-metadata
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,16 +172,31 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
+<<<<<<< HEAD
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+=======
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/_layout/ai-assistant': typeof LayoutAiAssistantRoute
+  '/_layout/items': typeof LayoutItemsRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/subcontractors': typeof LayoutSubcontractorsRoute
+  '/_layout/tasks': typeof LayoutTasksRoute
+  '/_layout/': typeof LayoutIndexRoute
+  '/_layout/projects/$projectId': typeof LayoutProjectsProjectIdRoute
+  '/_layout/projects/new': typeof LayoutProjectsNewRoute
+  '/_layout/projects/': typeof LayoutProjectsIndexRoute
+>>>>>>> remotes/origin/integration/project-metadata
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+<<<<<<< HEAD
     | '/login'
     | '/recover-password'
     | '/admin'
@@ -108,26 +204,69 @@ export interface FileRouteTypes {
     | '/admin/people'
     | '/admin/settings'
     | '/admin/'
+=======
+    | '/admin'
+    | '/login'
+    | '/recover-password'
+    | '/reset-password'
+    | '/signup'
+    | '/ai-assistant'
+    | '/items'
+    | '/settings'
+    | '/subcontractors'
+    | '/tasks'
+    | '/projects/$projectId'
+    | '/projects/new'
+    | '/projects/'
+>>>>>>> remotes/origin/integration/project-metadata
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/recover-password'
+<<<<<<< HEAD
     | '/settings'
     | '/admin/people'
     | '/admin/settings'
     | '/admin'
+=======
+    | '/reset-password'
+    | '/signup'
+    | '/ai-assistant'
+    | '/items'
+    | '/settings'
+    | '/subcontractors'
+    | '/tasks'
+    | '/'
+    | '/projects/$projectId'
+    | '/projects/new'
+    | '/projects'
+>>>>>>> remotes/origin/integration/project-metadata
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/login'
     | '/recover-password'
+<<<<<<< HEAD
     | '/_authenticated/admin'
     | '/_authenticated/settings'
     | '/_authenticated/admin/people'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/'
+=======
+    | '/reset-password'
+    | '/signup'
+    | '/_layout/ai-assistant'
+    | '/_layout/items'
+    | '/_layout/settings'
+    | '/_layout/subcontractors'
+    | '/_layout/tasks'
+    | '/_layout/'
+    | '/_layout/projects/$projectId'
+    | '/_layout/projects/new'
+    | '/_layout/projects/'
+>>>>>>> remotes/origin/integration/project-metadata
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -167,8 +306,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+<<<<<<< HEAD
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
+=======
+    '/_layout/tasks': {
+      id: '/_layout/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof LayoutTasksRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/subcontractors': {
+      id: '/_layout/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/subcontractors'
+      preLoaderRoute: typeof LayoutSubcontractorsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+>>>>>>> remotes/origin/integration/project-metadata
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
@@ -202,9 +360,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPeopleRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_layout/ai-assistant': {
+      id: '/_layout/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof LayoutAiAssistantRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/projects/': {
+      id: '/_layout/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof LayoutProjectsIndexRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/projects/new': {
+      id: '/_layout/projects/new'
+      path: '/projects/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof LayoutProjectsNewRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/projects/$projectId': {
+      id: '/_layout/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof LayoutProjectsProjectIdRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
+<<<<<<< HEAD
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminPeopleRoute: typeof AuthenticatedAdminPeopleRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
@@ -215,6 +402,30 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPeopleRoute: AuthenticatedAdminPeopleRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+=======
+interface LayoutRouteChildren {
+  LayoutAiAssistantRoute: typeof LayoutAiAssistantRoute
+  LayoutItemsRoute: typeof LayoutItemsRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutSubcontractorsRoute: typeof LayoutSubcontractorsRoute
+  LayoutTasksRoute: typeof LayoutTasksRoute
+  LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutProjectsProjectIdRoute: typeof LayoutProjectsProjectIdRoute
+  LayoutProjectsNewRoute: typeof LayoutProjectsNewRoute
+  LayoutProjectsIndexRoute: typeof LayoutProjectsIndexRoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutAiAssistantRoute: LayoutAiAssistantRoute,
+  LayoutItemsRoute: LayoutItemsRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutSubcontractorsRoute: LayoutSubcontractorsRoute,
+  LayoutTasksRoute: LayoutTasksRoute,
+  LayoutIndexRoute: LayoutIndexRoute,
+  LayoutProjectsProjectIdRoute: LayoutProjectsProjectIdRoute,
+  LayoutProjectsNewRoute: LayoutProjectsNewRoute,
+  LayoutProjectsIndexRoute: LayoutProjectsIndexRoute,
+>>>>>>> remotes/origin/integration/project-metadata
 }
 
 const AuthenticatedAdminRouteWithChildren =

@@ -9,15 +9,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { isLoggedIn } from "@/hooks/useAuth"
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const Route = createFileRoute("/_authenticated")({
   component: Layout,
   beforeLoad: async () => {
     if (!isLoggedIn()) {
-      throw redirect({
-        to: "/login",
-      })
-    }
+     throw redirect({
+       to: "/login",
+     })
+   }
   },
 })
 
