@@ -6,7 +6,7 @@ export const Route = createRootRoute({
 
 function Root() {
   return (
-    <div style={{ background: "white", minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh" }}>
       <Outlet />
     </div>
   )

@@ -8,7 +8,7 @@ import {
   UserRound,
 } from "lucide-react"
 
-export const Route = createFileRoute("/_layout/admin/")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminProjects,
   head: () => ({
     meta: [

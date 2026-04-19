@@ -48,6 +48,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 /* LOGIN BOX */
@@ -117,4 +118,35 @@
 .login-box button:hover {
   background: #35576d;
   transform: scale(1.02);
+}
+
+/* DARK MODE */
+.dark .login-right {
+  background: linear-gradient(to right, #0f2535, #1a3d52);
+}
+
+.dark .login-box {
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.dark .login-box input {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+}
+
+.dark .login-box input::placeholder {
+  color: #aaa;
+}
+
+.dark .forgot {
+  color: #a0c4d8;
+}
+
+.dark .login-box button {
+  background: #1e5f7a;
+}
+
+.dark .login-box button:hover {
+  background: #174d65;
 }

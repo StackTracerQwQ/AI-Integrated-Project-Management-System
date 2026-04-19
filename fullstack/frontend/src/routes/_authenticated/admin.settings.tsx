@@ -121,13 +121,13 @@ function Toggle({
   )
 }
 
-export const Route = createFileRoute("/_layout/admin/settings")({
+export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: AdminSettings,
   beforeLoad: async () => {
     const user = await UsersService.readUserMe()
     if (!user.is_superuser) {
       throw redirect({
-        to: "/",
+        to: "/settings",
       })
     }
   },
