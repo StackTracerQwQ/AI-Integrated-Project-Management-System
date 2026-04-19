@@ -48,7 +48,7 @@ const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      navigate({ to: "/settings" })
+      navigate({ to: "/" })
     },
     onError: handleError.bind(showErrorToast),
   })

@@ -6,7 +6,6 @@ import {
   Bot,
   Settings,
   Users,
-  PlusCircle,
   BarChart2,
   Wrench,
   Briefcase
@@ -24,9 +23,6 @@ import { type Item, Main } from "./Main"
 import { User } from "./User"
 
 const baseItems: Item[] = [
-  { icon: Home, title: "Home", path: "/" },
-  { icon: Briefcase, title: "Project", path: "/items" },
-  { icon: Settings, title: "Setting", path: "/settings" },
   { icon: Home, title: "Dashboard", path: "/" },
   { icon: FolderKanban, title: "Projects", path: "/projects" },
   { icon: CheckSquare, title: "Task Board", path: "/tasks" },

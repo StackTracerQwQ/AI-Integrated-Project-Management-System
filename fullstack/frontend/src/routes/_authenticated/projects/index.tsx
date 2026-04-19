@@ -15,7 +15,7 @@ import {
 
 
 
-export const Route = createFileRoute('/_layout/projects/')({
+export const Route = createFileRoute('/_authenticated/projects/')({
   component: Projects,
 })
 
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/_layout/projects/')({
 
 
 
-const projectsData = [
+/* const _projectsData = [
   {
     id: '1',
     jobNumber: 'PRJ-2024-001',
@@ -122,7 +122,7 @@ const projectsData = [
     progress: 100,
     daysElapsed: 208,
   },
-]
+] */
 
 
 
