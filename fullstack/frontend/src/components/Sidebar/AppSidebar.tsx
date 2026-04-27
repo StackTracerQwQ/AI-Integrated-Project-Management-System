@@ -26,6 +26,7 @@ const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },
   { icon: FolderKanban, title: "Projects", path: "/projects" },
   { icon: CheckSquare, title: "Task Board", path: "/tasks" },
+  { icon: Users, title: "People", path: "/people" },
   { icon: Wrench, title: "Subcontractors", path: "/subcontractors" },
   { icon: Bot, title: "AI Assistant", path: "/ai-assistant" },
   { icon: BarChart2, title: "Analytics", path: "/analytics" },
